@@ -1,0 +1,10 @@
+[% INCLUDE header.tt %]
+
+<h1>IRC</h1>
+
+<p><b>Server: irc.freenode.net</b><br />
+<b>Channel: ##ccna-study</b> (yes, that's two #)<br />
+</p>
+
+
+[% INCLUDE footer.tt %]

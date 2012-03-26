@@ -1,0 +1,11 @@
+[% INCLUDE header.tt %]
+
+<h1>Subnetting</h1>
+
+<p>Given the example: <b>192.168.10.57/29</b>, let's calculate the network address and the broadcast address</p>
+
+<p>We know that /29 is 255.255.255.252</p>
+
+<u>Using binary math</u>
+
+[% INCLUDE footer.tt %]

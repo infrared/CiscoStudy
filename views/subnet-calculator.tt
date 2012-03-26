@@ -1,0 +1,21 @@
+[% INCLUDE header.tt %]
+
+<h1>Subnet Calculator</h1>
+<p>Coming soon</p>
+<!--
+<form method="POST" action="/subnet-calculator">
+<table><tr><td>
+<input type="text" size="4" maxlength="3">.
+<input type="text" size="4" maxlength="3">.
+<input type="text" size="4" maxlength="3">.
+<input type="text" size="4" maxlength="3"></td><td>/</td>
+<td><select size="1" name="mask">
+<option value="32">32 (255.255.255.255)</option>
+<option value="31">31 (255.255.255.254)</option>
+</select>
+</td></tr>
+</table>
+</form>
+-->
+
+[% INCLUDE footer.tt %]
