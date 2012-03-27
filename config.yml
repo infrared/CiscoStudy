@@ -8,7 +8,7 @@ port: 5000
 
 # The default layout to use for your application (located in
 # views/layouts/main.tt)
-environment: "production"
+environment: "development"
 daemon: 0
 
 # when the charset is set to UTF-8 Dancer will handle for you

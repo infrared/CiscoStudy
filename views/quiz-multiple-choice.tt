@@ -4,8 +4,23 @@
 
 <p>[% vars.question %]</p>
 
+<form method="post" action="/cisco-quiz-multiple-choice">
+<input type="hidden" name="id" value="[% vars.id %]">
+<table border="0">
 [% FOREACH option in vars.options %]
 
-<p>[% option %]</p>
+<tr><td><input type="checkbox" name="option" value="[% option.id %]" />[% option.option %]</td></tr>
 [% END %]
+</table>
+<input type="submit" value="Submit">
+</form>
+
+
+[% IF vars.correct.defined %]
+   <p><b>Correct!</b></p>
+[% END %]
+
+
+
+[% vars.list %]
 [% INCLUDE footer.tt %]
