@@ -25,6 +25,44 @@ get '/irc' => sub {
 get '/subnetting-how-to' => sub {
 	template 'subnetting.tt';
 };
+get '/how-to-calculate-network-address' => sub {
+	template 'calculate-network-address.tt';
+};
+
+get '/new-simple-quiz' => sub {
+	template 'new-simple-quiz.tt';
+};
+post '/new-simple-quiz' => sub {
+	
+	my $cert_level = param 'cert_level';
+	my $category   = param 'category';
+	my $question   = param 'question';
+	my $answer     = param 'answer';
+	
+	if ( length $cert_level && length $category && length $question && length $answer) {
+
+		my $insert = schema->resultset('SimpleQuiz')->create({
+			cert_level => $cert_level,
+			category   => $category,
+			question   => $question,
+			answer     => $answer,
+		});
+		if ($insert->id) {
+			var success => 1;
+			var id => $insert->id;
+		}
+		else {
+			var error => 1;
+		}
+	}
+	else {
+		var formerror => 1;
+	}
+	
+	template 'new-simple-quiz';
+	
+	
+};
 
 get '/cisco-quiz-multiple-choice' => sub {
 	
@@ -91,6 +129,7 @@ get '/cisco-quiz-multiple-choice' => sub {
 	template 'quiz-multiple-choice';
 	
 };
+=cut
 post '/cisco-quiz-multiple-choice' => sub {
 	my $id = param 'id';
 	my $guess = param 'option';
@@ -110,5 +149,5 @@ post '/cisco-quiz-multiple-choice' => sub {
 
 	template 'quiz-multiple-choice';
 };
-
+=cut
 true;
