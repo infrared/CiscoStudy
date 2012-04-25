@@ -28,7 +28,7 @@
 
 <tr><td>Question:</td><td><textarea cols="40" rows="5" name="question"></textarea></td></tr>
 
-<tr><td>Answer:</td><td><input type="text" name="answer"></td></tr>
+<tr><td>Answer:</td><td><input type="text" name="answer"> Example: conf(igure) t(erminal)</td></tr>
 
 <tr><td colspan="2"><input type="submit" value="Add"></td></tr>
 
