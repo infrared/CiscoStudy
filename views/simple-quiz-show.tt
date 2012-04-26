@@ -1,0 +1,9 @@
+[% INCLUDE header.tt %]
+
+<table>
+    [% FOREACH row IN vars.rows %]
+        <tr><td>[% row.id %]</td><td>[% row.question %]</td><td>[% row.answer %]</td></tr>
+    [% END %]
+</table>
+
+[% INCLUDE footer.tt %]

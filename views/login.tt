@@ -1,0 +1,23 @@
+[% INCLUDE header.tt %]
+
+
+[% vars.info %]
+<form method="POST" action="/login">
+<table class="inner" width="700">
+	<tr><td colspan="2"><h3>Login</h3></td></tr>
+	<tr><td width="150">Username</td><td align="left"><input type="text" name="username" autocomplete="off"></td></tr>
+	<tr><td>Password</td><td><input type="password" name="password"></td></tr>
+    <tr><td colspan="2">	<input type="submit" value="Login"></td></tr>
+</table>
+</form>
+
+[% IF vars.errors.defined %]
+    Error(s):<br />
+    [% FOR error IN vars.errors %]
+		<li>[% error %]</li>
+    [% END %]
+[% END %]
+
+
+[% INCLUDE footer.tt %]
+

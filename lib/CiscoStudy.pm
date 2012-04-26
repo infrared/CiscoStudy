@@ -5,8 +5,66 @@ use Dancer::Plugin::DBIC;
 use List::Util 'shuffle';
 use Dancer ':syntax';
 use Array::Compare;
+use Crypt::PasswdMD5;
 
 our $VERSION = '0.1';
+
+hook 'before' => sub {
+    if (request->path_info =~ m{^/c\/} && !session('authenticated') ) {
+        request->path_info('/login');
+    }
+};
+get '/login' => sub {
+    template 'login.tt';
+};
+post '/login' => sub {
+    my $username = param 'username';
+    my $password = param 'password';
+    
+    my @errors;
+    
+    
+    my $search = schema->resultset('Users')->search({
+     	username => $username
+    });
+	if ($search->count) {
+    	my $row    = $search->first;
+    	my $stored = $row->password;
+		
+		var username => $username;
+		var password => $password;
+		var stored   => $stored;
+		
+		var mine => unix_md5_crypt($password,$stored);
+        if ($stored eq unix_md5_crypt($password,$stored)) {
+            session authenticated => 1;
+            session username      => $row->username;
+            session user_id       => $row->user_id;
+			session role          => $row->role;
+            redirect '/';
+        }
+        else {
+            push (@errors, "Invalid username or password");
+                       
+        }
+    }
+    else {
+        push (@errors, "Login Failed");
+        
+    }
+    var errors => \@errors;
+    template 'login.tt';
+
+};
+get '/logout' => sub {
+    session->destroy;
+	my $hash = session;
+    redirect '/';
+};
+get '/c/test' => sub {
+	template 'index.tt';
+};
+
 
 get '/' => sub {
     template 'index.tt';
@@ -31,6 +89,25 @@ get '/how-to-calculate-network-address' => sub {
 
 get '/new-simple-quiz' => sub {
 	template 'new-simple-quiz.tt';
+};
+get  '/simple-quiz-show' => sub {
+	my $search = schema->resultset('SimpleQuiz')->search;
+	
+	if ($search->count) {
+		my @rows;
+		while (my $row = $search->next) {
+			my $hash = {
+				id => $row->quiz_id,
+				question => $row->question,
+				answer => $row->answer,
+			};
+			push(@rows,$hash);
+			
+		}
+		var rows => \@rows;
+	}
+	template 'simple-quiz-show.tt';
+	
 };
 post '/new-simple-quiz' => sub {
 	

@@ -1,8 +1,16 @@
 </div>
 
 <div id="Menu">
-	<a href="/subnet-calculator">Subnet Calculator</a><br />
 	<a href="/irc">IRC</a><br />
+	
+	<br />
+	[% IF session.authenticated.defined %]
+		<a href="/logout">logout</a>
+	[% ELSE %]
+		<a href="/login">login</a>
+	[% END %]
+	<br />
+		
 </div>
 
 <!--    BlueRobot was here.

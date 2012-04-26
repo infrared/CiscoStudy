@@ -10,6 +10,11 @@
 
 <body>
 
+[% IF session.authenticated.defined %]
+<div id="TopRight">
+    Welcome [% session.username %]! ([% session.role %])
+</div>
+[% END %]
 <div id="Header"><a href="http://ciscostudy.org" >Cisco Study</a></div>
 
 <div id="Content">
