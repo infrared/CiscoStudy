@@ -1,0 +1,17 @@
+[% INCLUDE header.tt %]
+
+<h1>Profile</h1>
+
+
+<img src="[% vars.gravitar %]" />
+
+<table>
+    <tr><td>Username:</td><td>[% session.username %]</td></tr>
+    <tr><td>User ID:</td><td>[% session.user_id   %]</td></tr>
+    <tr><td>Role:</td><td>[% session.role %]</td></tr>
+    
+</table>
+<p><a href="/c/change-password">change password</a></p>
+<p><a href="/c/change-email">change email</a></p>
+
+[% INCLUDE footer.tt %]

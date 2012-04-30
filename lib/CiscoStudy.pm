@@ -6,6 +6,9 @@ use List::Util 'shuffle';
 use Dancer ':syntax';
 use Array::Compare;
 use Crypt::PasswdMD5;
+use URI::Escape qw(uri_escape);
+use Digest::MD5 qw(md5_hex);
+use Email::Valid;
 
 our $VERSION = '0.1';
 
@@ -56,6 +59,17 @@ post '/login' => sub {
     template 'login.tt';
 
 };
+get '/profile' => sub {
+	my $user_id = session 'user_id';
+	my $email = 'michael@kroher.net';
+	my $default;
+	my $size = 40;
+
+    my $gravitar = "http://www.gravatar.com/avatar/". md5_hex(lc $email). "\?d=".uri_escape($default). "\&s=".$size;
+	var gravitar => $gravitar;
+	template 'profile.tt';
+};
+
 get '/logout' => sub {
     session->destroy;
 	my $hash = session;
@@ -87,11 +101,107 @@ get '/how-to-calculate-network-address' => sub {
 	template 'calculate-network-address.tt';
 };
 
-get '/new-simple-quiz' => sub {
+
+get '/c/change-email' => sub {
+	template 'change-email.tt';
+};
+post '/c/change-email' => sub {
+	my $email = param 'email';
+	my $user_id = session 'user_id';
+	
+	if (Email::Valid->address($email)) {
+	
+		my $user = schema->resultset('Users')->find($user_id)->update({ email => $email });
+		if ($user) {
+				var success => 1;
+		}
+		else {
+			var error => 1;
+		}
+	}
+	else {
+	
+		var invalid => 1;
+	}
+	
+	
+	template 'change-email.tt';
+};
+get '/c/change-password' => sub {
+	template 'change-password.tt';
+};
+post '/c/change-password' => sub {
+	my $password1 = param 'password1';
+	my $password2 = param 'password2';
+	my $user_id = session 'user_id';
+	
+	if (length $password1 > 4) {
+		if ($password1 eq $password2) {
+			my $hash = unix_md5_crypt($password1);
+			my $user = schema->resultset('Users')->find($user_id)->update({ password => $hash });
+			if ($user) {
+				var success => 1;
+			}
+			else {
+				var error => 1;
+			}
+		}
+		else {
+			var mismatch => 1;
+		}
+			
+		
+	}
+	else {
+		var invalid => 1;
+	}
+	template 'change-password.tt';
+};
+
+get '/c/new-simple-quiz' => sub {
 	template 'new-simple-quiz.tt';
 };
-get  '/simple-quiz-show' => sub {
-	my $search = schema->resultset('SimpleQuiz')->search;
+get '/c/simple-quiz-show' => sub {
+		my $search = schema->resultset('SimpleQuiz')->search;
+		if ($search->count) {
+		my @rows;
+		while (my $row = $search->next) {
+			my $hash = {
+				id => $row->quiz_id,
+				question => $row->question,
+				answer => $row->answer,
+			};
+			push(@rows,$hash);
+			
+		}
+		var rows => \@rows;
+	}	
+	my $filter = schema->resultset('SimpleQuiz')->search(
+		undef,
+		{
+			columns => [ qw/ category /],
+			distinct => 1,
+
+		}
+	);
+	my @categories;
+	while(my $row = $filter->next) {
+		push(@categories,$row->category);
+	}
+	var categories => \@categories;
+
+	template 'simple-quiz-show.tt';
+
+};
+post '/c/simple-quiz-show' => sub {
+	
+	my $category = param 'category';
+	my $cert_level = param 'cert_level';
+	
+	my $search = schema->resultset('SimpleQuiz')->search({
+		category => $category,
+		cert_level => $cert_level,
+	});
 	
 	if ($search->count) {
 		my @rows;
@@ -106,15 +216,30 @@ get  '/simple-quiz-show' => sub {
 		}
 		var rows => \@rows;
 	}
+	
+	my $filter = schema->resultset('SimpleQuiz')->search(
+		undef,
+		{
+			columns => [ qw/ category /],
+			distinct => 1,
+
+		}
+	);
+	my @categories;
+	while(my $row = $filter->next) {
+		push(@categories,$row->category);
+	}
+	var categories => \@categories;
 	template 'simple-quiz-show.tt';
 	
 };
-post '/new-simple-quiz' => sub {
+post '/c/new-simple-quiz' => sub {
 	
 	my $cert_level = param 'cert_level';
 	my $category   = param 'category';
 	my $question   = param 'question';
 	my $answer     = param 'answer';
+	my $user_id    = session 'user_id';
 	
 	if ( length $cert_level && length $category && length $question && length $answer) {
 
@@ -123,6 +248,7 @@ post '/new-simple-quiz' => sub {
 			category   => $category,
 			question   => $question,
 			answer     => $answer,
+			contributor => $user_id,
 		});
 		if ($insert->id) {
 			var success => 1;

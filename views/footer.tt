@@ -2,6 +2,7 @@
 
 <div id="Menu">
 	<a href="/irc">IRC</a><br />
+	<a href="/definitions">Definitions</a>
 	
 	<br />
 	[% IF session.authenticated.defined %]
@@ -10,8 +11,18 @@
 		<a href="/login">login</a>
 	[% END %]
 	<br />
+	[% IF session.username.defined %]
+	<br /><br />
+	<b>Management</b><br />
+	<a href="/c/simple-quiz-show">Quiz Questions</a><br />
+	<a href="/c/multiple-choice">Multiple Choice</a><br />
+	[% IF session.role == 'admin' %]<a href="/c/users">Users</a><br />[% END %]
+	[% END %]
+	
 		
 </div>
+
+
 
 <!--    BlueRobot was here.
 	I always like this layout :)

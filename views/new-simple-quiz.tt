@@ -14,7 +14,7 @@
 [% END %]
 
 
-<form method="POST" action="/new-simple-quiz">
+<form method="POST" action="/c/new-simple-quiz">
 <table>
 <tr><td>Level</td><td><select name="cert_level">
     <option value="ccent">CCENT</option>

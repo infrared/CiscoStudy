@@ -21,7 +21,7 @@ p {
 	padding:0px;
 	}
 #Content>p {margin:0px;}
-#Content>p+p {text-indent:30px;}
+/* #Content>p+p {text-indent:30px;} */
 
 a {
 	color:#09c;
@@ -87,6 +87,7 @@ body>#Header {height:14px;}
 	}
 /* Again, "be nice to Opera 5". */
 body>#Menu {width:150px;}
+
 
 
 

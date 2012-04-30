@@ -1,0 +1,28 @@
+[% INCLUDE header.tt %]
+
+<h1>Change Email</h1>
+
+[% IF vars.success.defined %]
+    <p>Email successfully updated</p>
+[% ELSE %]
+    
+    [% IF vars.error.defined %]
+        <p>Uh oh! A database error!</p>
+    [% ELSIF vars.invalid.defined %]
+        <p>Invalid</p>
+    [% END %]
+    
+    <form method="POST" action="/c/change-email">
+        
+        
+        <table>
+            <tr><td>New Email</td><td><input type="text" name="email"></td></tr>
+            <tr><td colspan="2"><input type="submit" value="update"></td></tr>
+        </table>
+
+    </form>
+    
+    
+[% END %]
+
+[% INCLUDE footer.tt %]
