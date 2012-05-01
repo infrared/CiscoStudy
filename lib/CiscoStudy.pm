@@ -267,6 +267,13 @@ post '/c/new-simple-quiz' => sub {
 	
 };
 
+
+get '/c/new-multiple-choice-quiz' => sub {
+    template 'new-multiple-choice-quiz.tt';
+};
+
+
+
 get '/cisco-quiz-multiple-choice' => sub {
 	
 	if (!session('start')) {
@@ -289,7 +296,7 @@ get '/cisco-quiz-multiple-choice' => sub {
 		}
 	}
 	if (!session('list')) {
-		my $all = schema->resultset('MCQuestions')->search;
+		my $all = schema->resultset('MCQuiz')->search;
 		if ($all->count) {
 			my @list;
 			while (my $row = $all->next) {
@@ -309,11 +316,11 @@ get '/cisco-quiz-multiple-choice' => sub {
 	session list => $list;
 	
 	
-	my $search = schema->resultset('MCQuestions')->find($id);
+	my $search = schema->resultset('MCQuiz')->find($id);
     if ($search) {
     
 		var question => $search->question;
-        my $options = schema->resultset('MCOptions')->search({ parent_id => $id });
+        my $options = schema->resultset('MCQuizOptions')->search({ parent_id => $id });
         my @ids;
         
         while(my $row = $options->next) {
@@ -326,31 +333,40 @@ get '/cisco-quiz-multiple-choice' => sub {
         my @shuffled = shuffle(@ids);
 		var id => $id;
 		var options => \@shuffled;
-		use Data::Dumper;
-		var list => Dumper session('list');
+#		use Data::Dumper;
+#		var list => Dumper session('list');
 	}
 	template 'quiz-multiple-choice';
 	
 };
-=cut
+
 post '/cisco-quiz-multiple-choice' => sub {
 	my $id = param 'id';
 	my $guess = param 'option';
 	
 	my @guesses;
+	if (ref $guess eq 'ARRAY') {
+	    @guesses = @{ $guess };
+	    
+	}
+	else {
+	    push(@guesses,$guess);
+	}
+	
+
 	
 	
-	my $search = schema->resultset('MCQuestions')->find($id);
+	my $search = schema->resultset('MCQuiz')->find($id);
 	my (@answers) = ($search->answer =~ /(\d+)/g);
 	
 	my $compare = Array::Compare->new;
 	
-	if ($compare->perm( $guesses, \@answers)) {
+	if ($compare->perm( \@guesses, \@answers)) {
 		var correct => "1";
 		
 	}
 
 	template 'quiz-multiple-choice';
 };
-=cut
+
 true;

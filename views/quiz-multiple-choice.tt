@@ -20,7 +20,4 @@
    <p><b>Correct!</b></p>
 [% END %]
 
-
-
-[% vars.list %]
 [% INCLUDE footer.tt %]

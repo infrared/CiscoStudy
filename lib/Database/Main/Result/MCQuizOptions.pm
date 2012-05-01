@@ -1,7 +1,7 @@
-package Database::Main::Result::MCOptions;
+package Database::Main::Result::MCQuizOptions;
 use base qw/DBIx::Class::Core/;
 
-__PACKAGE__->table('mc_options');
+__PACKAGE__->table('mc_quiz_options');
 __PACKAGE__->add_columns(qw/
 	mco_id
 	parent_id
@@ -11,7 +11,7 @@ __PACKAGE__->set_primary_key('mco_id');
 
 1;
 =cut
-mysql> describe mc_options;
+mysql> describe mc_quiz_options;
 +-----------+------------------+------+-----+---------+----------------+
 | Field     | Type             | Null | Key | Default | Extra          |
 +-----------+------------------+------+-----+---------+----------------+
@@ -19,5 +19,5 @@ mysql> describe mc_options;
 | parent_id | int(10) unsigned | NO   |     | NULL    |                |
 | options   | text             | NO   |     | NULL    |                |
 +-----------+------------------+------+-----+---------+----------------+
-3 rows in set (0.26 sec)
+3 rows in set (0.00 sec)
 

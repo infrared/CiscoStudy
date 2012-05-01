@@ -1,0 +1,43 @@
+[% INCLUDE header.tt %]
+
+<h1>New Multiple Choice Quiz</h1>
+
+
+<form method="post" action="/c/new-multiple-choice-quiz">
+
+<textarea name="question"></textarea>
+<input type="hidden" name="id" value="[% vars.id %]">
+<table border="0">
+
+
+<tr>
+    <td><input type="checkbox" name="id" value="1" />
+    <td><input type="text" name="option1"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="2" />
+    <td><input type="text" name="option1"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="3" />
+    <td><input type="text" name="option1"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="4" />
+    <td><input type="text" name="option1"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="5" />
+    <td><input type="text" name="option1"></td>
+</tr>
+
+
+
+</table>
+<input type="submit" value="Submit">
+</form>
+
+
+
+
+[% INCLUDE footer.tt %]
