@@ -233,6 +233,34 @@ post '/c/simple-quiz-show' => sub {
 	template 'simple-quiz-show.tt';
 	
 };
+get '/c/edit-multiple-choice-quiz/*' => sub {
+	my ($id) = splat;
+	
+	my $find = schema->resultset('MCQuiz')->find($id);
+	
+	if ($find) {
+		
+		my $question = $find->question;
+		my $answer   = $find->answer;
+		
+		my $options = schema->resultset('MCQuizOptions')->search({ parent_id => $id });
+        my @ids;
+        
+        while(my $row = $options->next) {
+			my $hash;
+			$hash->{id} = $row->mco_id;
+			$hash->{option} = $row->options;
+			push(@ids,$hash);
+           
+        }
+		var question => $question;
+		var answer   => $answer;
+		var options  => \@ids;
+	}
+	template 'edit-multiple-choice-quiz.tt';
+	
+	
+};
 post '/c/new-simple-quiz' => sub {
 	
 	my $cert_level = param 'cert_level';
@@ -272,7 +300,34 @@ get '/c/new-multiple-choice-quiz' => sub {
     template 'new-multiple-choice-quiz.tt';
 };
 
-
+post '/c/new-multiple-choice-quiz' => sub {
+	
+	my ($answers) = param 'id';
+	
+	use Data::Dumper;
+	var answers => Dumper $answers;
+	
+	
+	
+	my $insert = schema->resultset('MCQuiz')->create({
+		question => param 'question',
+		date_created => time,
+		answer => join(',', @{$answers}),
+		category => param 'category',
+		cert_level => param 'cert_level',
+		contributor => session 'user_id',
+	
+		
+	});
+	if ($insert->id) {
+		var id => $insert->id;
+	}
+	
+	
+	
+	template 'new-multiple-choice-quiz.tt';
+	
+};
 
 get '/cisco-quiz-multiple-choice' => sub {
 	

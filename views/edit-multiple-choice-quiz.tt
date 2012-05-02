@@ -1,0 +1,31 @@
+[% INCLUDE header.tt %]
+
+<h1>Ed Multiple Choice Quiz</h1>
+
+
+<form method="post" action="/c/edit-multiple-choice-quiz">
+
+<textarea rows="6" cols="50" name="question">[% vars.question %]"</textarea>
+<input type="hidden" name="id" value="[% vars.id %]">
+<table border="0">
+    
+    [% FOREACH option IN vars.options %]
+
+
+<tr>
+    <td><input type="checkbox" name="id" value="[% option.id %]" />
+    <td><input size="50" type="text" name="option1" value="[% option.option %]"></td>
+</tr>
+
+[% END %]
+
+
+
+</table>
+<input type="submit" value="Update">
+</form>
+
+
+
+
+[% INCLUDE footer.tt %]

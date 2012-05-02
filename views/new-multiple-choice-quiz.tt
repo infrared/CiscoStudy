@@ -2,13 +2,17 @@
 
 <h1>New Multiple Choice Quiz</h1>
 
+[% vars.id %]
+[% vars.answers %]
 
 <form method="post" action="/c/new-multiple-choice-quiz">
 
-<textarea name="question"></textarea>
-<input type="hidden" name="id" value="[% vars.id %]">
-<table border="0">
+<textarea rows="6" cols="50" name="question"></textarea>
 
+<table border="0">
+    
+<tr><td>Category</td><td><select name="category"><option>IOS</option></select></td></tr>
+<tr><td>Cert Level</td><td><select name="cert_level"><option>ccent</option></select></td></tr>
 
 <tr>
     <td><input type="checkbox" name="id" value="1" />
@@ -16,19 +20,39 @@
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="2" />
-    <td><input type="text" name="option1"></td>
+    <td><input type="text" name="option2"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="3" />
-    <td><input type="text" name="option1"></td>
+    <td><input type="text" name="option3"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="4" />
-    <td><input type="text" name="option1"></td>
+    <td><input type="text" name="option4"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="5" />
-    <td><input type="text" name="option1"></td>
+    <td><input type="text" name="option6"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="6" />
+    <td><input type="text" name="option6"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="7" />
+    <td><input type="text" name="option7"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="8" />
+    <td><input type="text" name="option8"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="9" />
+    <td><input type="text" name="option9"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="10" />
+    <td><input type="text" name="option10"></td>
 </tr>
 
 

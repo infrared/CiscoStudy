@@ -14,11 +14,13 @@
     </select>
     <input type="submit" value="filter">
 </form>
+
+<a href="/c/new-simple-quiz">Create a new Quiz question</a>
     
 
 <table>
     [% FOREACH row IN vars.rows %]
-        <tr><td>[% row.id %]</td><td>[% row.question %]</td><td>[% row.answer %]</td></tr>
+        <tr><td><a href="/c/edit-simple-quiz/[% row.id %]">[% row.id %]</a></td><td>[% row.question %]</td><td>[% row.answer %]</td></tr>
     [% END %]
 </table>
 
