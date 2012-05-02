@@ -161,6 +161,11 @@ post '/c/change-password' => sub {
 get '/c/new-simple-quiz' => sub {
 	template 'new-simple-quiz.tt';
 };
+
+get '/c/simple-quiz-menu' => sub {
+    template 'simple-quiz-menu.tt';
+    
+};
 get '/c/simple-quiz-show' => sub {
 		my $search = schema->resultset('SimpleQuiz')->search;
 		if ($search->count) {
@@ -243,7 +248,7 @@ get '/c/edit-multiple-choice-quiz/*' => sub {
 		my $question = $find->question;
 		my $answer   = $find->answer;
 		
-		my $options = schema->resultset('MCQuizOptions')->search({ parent_id => $id });
+		my $options = schema->resultset('MCQuizOption')->search({ parent_id => $id });
         my @ids;
         
         while(my $row = $options->next) {
@@ -304,23 +309,54 @@ post '/c/new-multiple-choice-quiz' => sub {
 	
 	my ($answers) = param 'id';
 	
+	
+	my ($options) =  param 'option';
+	
+	my $x = 0;
+	foreach (@$options) {
+	    delete @$options[$x] unless length @$options[$x];
+	    $x++;
+	}
+	
+	my $user_id = session 'user_id';
+	my $category = param 'category';
+	my $cert_level = param 'cert_level';
+	my $question = param 'question';
+	
+
+	
 	use Data::Dumper;
 	var answers => Dumper $answers;
 	
+	my $time = time;
+	var time => $time;
+	my $data = {
+	    	question => $question,
+		date_created => $time,
+		answer => '',
+		category => $category,
+		cert_level => $cert_level,
+		contributor => $user_id,
+	};
 	
-	
-	my $insert = schema->resultset('MCQuiz')->create({
-		question => param 'question',
-		date_created => time,
-		answer => join(',', @{$answers}),
-		category => param 'category',
-		cert_level => param 'cert_level',
-		contributor => session 'user_id',
-	
-		
-	});
+	my $insert = schema->resultset('MCQuiz')->create($data);
 	if ($insert->id) {
-		var id => $insert->id;
+	    my @answers_update;
+	    my $parent_id = $insert->id;
+	    var id => $parent_id;
+	    my $x = 1;
+	    foreach my $option (@{ $options }) {
+		my $insert_o = schema->resultset('MCQuizOption')->create({
+		    parent_id => $parent_id,
+		    mc_option => $option,
+		});
+		if (grep($x == $_,@{$answers})) {
+		    push(@answers_update,$insert_o->id);
+		}
+		$x++;
+	    }
+	    my $answer_update = join(',', @answers_update);
+	    $insert->update({ answer => $answer_update });
 	}
 	
 	
@@ -374,14 +410,14 @@ get '/cisco-quiz-multiple-choice' => sub {
 	my $search = schema->resultset('MCQuiz')->find($id);
     if ($search) {
     
-		var question => $search->question;
-        my $options = schema->resultset('MCQuizOptions')->search({ parent_id => $id });
+	var question => $search->question;
+        my $options = schema->resultset('MCQuizOption')->search({ parent_id => $id });
         my @ids;
         
         while(my $row = $options->next) {
 			my $hash;
 			$hash->{id} = $row->mco_id;
-			$hash->{option} = $row->options;
+			$hash->{option} = $row->mc_option;
 			push(@ids,$hash);
            
         }
@@ -407,9 +443,7 @@ post '/cisco-quiz-multiple-choice' => sub {
 	else {
 	    push(@guesses,$guess);
 	}
-	
-
-	
+    
 	
 	my $search = schema->resultset('MCQuiz')->find($id);
 	my (@answers) = ($search->answer =~ /(\d+)/g);

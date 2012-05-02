@@ -1,0 +1,14 @@
+[% INCLUDE header.tt %]
+
+<h1>Quiz Management</h1>
+
+
+<b>Simple Quiz Questions</b><br />
+<a href="/c/simple-quiz-show">View Quiz Questions</a><br />
+<a href="/c/new-simple-quiz">Create a new quiz question</a><br />
+<br /><br />
+
+<b>Multiple Choice Questions</b><br />
+<a href="/c/multiple-choice-show">View Quiz Questions</a><br />
+<a href="/c/new-multiple-choice-quiz">Create a new multiple choice question</a><br />
+[% INCLUDE footer.tt %]

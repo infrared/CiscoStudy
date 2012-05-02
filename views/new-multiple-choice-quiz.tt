@@ -3,6 +3,7 @@
 <h1>New Multiple Choice Quiz</h1>
 
 [% vars.id %]
+[% vars.time %]
 [% vars.answers %]
 
 <form method="post" action="/c/new-multiple-choice-quiz">
@@ -11,48 +12,48 @@
 
 <table border="0">
     
-<tr><td>Category</td><td><select name="category"><option>IOS</option></select></td></tr>
-<tr><td>Cert Level</td><td><select name="cert_level"><option>ccent</option></select></td></tr>
+<tr><td>Category</td><td><select name="category"><option value="IOS">IOS</option></select></td></tr>
+<tr><td>Cert Level</td><td><select name="cert_level"><option value="ccent">ccent</option></select></td></tr>
 
 <tr>
     <td><input type="checkbox" name="id" value="1" />
-    <td><input type="text" name="option1"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="2" />
-    <td><input type="text" name="option2"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="3" />
-    <td><input type="text" name="option3"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="4" />
-    <td><input type="text" name="option4"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="5" />
-    <td><input type="text" name="option6"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="6" />
-    <td><input type="text" name="option6"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="7" />
-    <td><input type="text" name="option7"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="8" />
-    <td><input type="text" name="option8"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="9" />
-    <td><input type="text" name="option9"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 <tr>
     <td><input type="checkbox" name="id" value="10" />
-    <td><input type="text" name="option10"></td>
+    <td><input type="text" name="option"></td>
 </tr>
 
 
