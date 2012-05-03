@@ -1,0 +1,22 @@
+[% INCLUDE header.tt %]
+
+<h1>Users</h1>
+
+
+<table>
+[% FOREACH user IN vars.users %]
+    
+    <tr>
+        <td>[% user.user_id %]</td>
+        <td>[% user.username %]</td>
+        <td>[% users.email %]</td>
+        <td>[% user.date_joined %]</td>
+        <td>[% user.last_login %]</td>
+        <td>[% user.timezone %]</td>
+        <td>[% user.role %]</td>
+        
+    </tr>
+
+[% END %]
+
+[% INCLUDE footer.tt %]

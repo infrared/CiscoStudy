@@ -8,7 +8,7 @@ __PACKAGE__->add_columns(qw/
     email
     date_joined
     last_login
-    time_zone
+    timezone
 	raw_nick
 	password
 	role
@@ -27,7 +27,7 @@ mysql> describe users;
 | email       | varchar(250)     | NO   |     | NULL    |                |
 | date_joined | int(14) unsigned | NO   |     | NULL    |                |
 | last_login  | int(14) unsigned | NO   |     | NULL    |                |
-| time_zone   | varchar(250)     | NO   |     | NULL    |                |
+| timezone    | varchar(250)     | NO   |     | NULL    |                |
 | raw_nick    | varchar(250)     | NO   |     | NULL    |                |
 | password    | varchar(250)     | NO   |     | NULL    |                |
 | role        | varchar(250)     | YES  |     | none    |                |

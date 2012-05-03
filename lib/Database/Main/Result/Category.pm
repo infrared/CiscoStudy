@@ -1,7 +1,7 @@
-package Database::Main::Result::Categories;
+package Database::Main::Result::Category;
 use base qw/DBIx::Class::Core/;
 
-__PACKAGE__->table('categories');
+__PACKAGE__->table('category');
 __PACKAGE__->add_columns(qw/
 	cat_id
 	category

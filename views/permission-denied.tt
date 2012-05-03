@@ -1,0 +1,5 @@
+[% INCLUDE header.tt %]
+
+<p><b>Insufficient privileges</b></p>
+
+[% INCLUDE footer.tt %]

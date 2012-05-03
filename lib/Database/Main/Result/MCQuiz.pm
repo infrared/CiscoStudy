@@ -4,12 +4,12 @@ use base qw/DBIx::Class::Core/;
 __PACKAGE__->table('mc_quiz');
 __PACKAGE__->add_columns(qw/
 	mc_id
-        date_created
+    date_created
 	question
 	answer
 	category
-        cert_level
-        contributor
+    cert_level
+    contributor
 /);
 __PACKAGE__->set_primary_key('mc_id');
 

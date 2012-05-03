@@ -1,0 +1,20 @@
+[% INCLUDE header.tt %]
+
+<h1>Edit TimeZone</h1>
+
+[% IF vars.success.defined %]
+    <p><b>TimeZone updated</b></p>
+[% END %]
+<form method="POST" action="/c/change-timezone">
+<table>
+    <tr><td>TimeZone:</td><td><select name="timezone">
+[% FOREACH zone IN vars.timezones %]
+    
+    <option value="[% zone %]">[% zone %]</option>
+
+[% END %]
+</select></td><td><input type="submit" value="update"></td></tr>
+</table>
+</form>
+
+[% INCLUDE footer.tt %]

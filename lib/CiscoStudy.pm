@@ -9,6 +9,8 @@ use Crypt::PasswdMD5;
 use URI::Escape qw(uri_escape);
 use Digest::MD5 qw(md5_hex);
 use Email::Valid;
+use DateTime;
+#use DateTime::TimeZone
 
 our $VERSION = '0.1';
 
@@ -40,10 +42,27 @@ post '/login' => sub {
 		
 		var mine => unix_md5_crypt($password,$stored);
         if ($stored eq unix_md5_crypt($password,$stored)) {
+			$search->update({ last_login => time });
             session authenticated => 1;
             session username      => $row->username;
             session user_id       => $row->user_id;
 			session role          => $row->role;
+			session timezone	  => $row->timezone;
+			
+			
+			if ($row->role eq 'admin') {
+				session admin	  => 1;
+				session moderator => 1;
+				session contributor => 1;
+			}
+			elsif ($row->role eq 'moderator') {
+				session moderator => 1;
+				session contributor => 1;
+			}
+			elsif($row->role eq 'contributor') {
+				session contributor => 1;
+			}
+			
             redirect '/';
         }
         else {
@@ -51,6 +70,7 @@ post '/login' => sub {
                        
         }
     }
+	
     else {
         push (@errors, "Login Failed");
         
@@ -100,8 +120,28 @@ get '/subnetting-how-to' => sub {
 get '/how-to-calculate-network-address' => sub {
 	template 'calculate-network-address.tt';
 };
-
-
+get '/c/change-timezone' => sub {
+	use DateTime::TimeZone;
+	my @timezones = DateTime::TimeZone->all_names;
+	var timezones => \@timezones;
+	
+	template 'change-timezone.tt';
+};
+post '/c/change-timezone' => sub {
+	my $user_id = session 'user_id';
+	my $timezone = param 'timezone';
+	my $user = schema->resultset('Users')->find($user_id)->update({ timezone => $timezone });
+	if ($user) {
+		var success => 1;
+		session timezone => $timezone;
+	}
+	else {
+		var error => 1;
+	}
+		my @timezones = DateTime::TimeZone->all_names;
+	var timezones => \@timezones;
+	template 'change-timezone.tt';
+};
 get '/c/change-email' => sub {
 	template 'change-email.tt';
 };
@@ -158,8 +198,45 @@ post '/c/change-password' => sub {
 	template 'change-password.tt';
 };
 
+get '/c/users' => sub {
+	if (session('admin')) {
+		
+		
+		my $search = schema->resultset('Users')->search;
+		
+		if ($search->count) {
+			my @users;
+			while (my $row = $search->next) {
+				my $hash = {
+					user_id => $row->user_id,
+					username => $row->username,
+					email => $row->email,
+					date_joined => $row->date_joined,
+					last_login => $row->last_login,
+					timezone => $row->timezone,
+					role => $row->role,
+					
+					
+				};
+				push (@users,$hash);
+			}
+			var users => \@users;
+			
+		}
+		template 'users.tt';
+	}
+	else {
+		template 'permission-denied';
+	}
+};
+
 get '/c/new-simple-quiz' => sub {
-	template 'new-simple-quiz.tt';
+	if (session('contributor')) {
+		template 'new-simple-quiz.tt';
+	}
+	else {
+		template 'permission-denied.tt';
+	}
 };
 
 get '/c/simple-quiz-menu' => sub {
@@ -307,9 +384,23 @@ get '/c/new-multiple-choice-quiz' => sub {
 
 post '/c/new-multiple-choice-quiz' => sub {
 	
-	my ($answers) = param 'id';
+	my $file  = request->upload('upfile');
 	
+	$file->copy_to('/home/infrared/dev/CiscoStudy/public/images/mc_quiz');
 	
+	var type => $file->type;
+
+	my @answers;
+	my $ids = param 'id';
+	
+	if (ref $ids ne 'ARRAY') {
+		push (@answers,$ids);
+	}
+	else {
+		@answers = @{$ids};
+	}
+	
+
 	my ($options) =  param 'option';
 	
 	my $x = 0;
@@ -318,20 +409,19 @@ post '/c/new-multiple-choice-quiz' => sub {
 	    $x++;
 	}
 	
-	my $user_id = session 'user_id';
-	my $category = param 'category';
-	my $cert_level = param 'cert_level';
-	my $question = param 'question';
+	my $user_id 	= session 'user_id';
+	my $category 	= param 'category';
+	my $cert_level 	= param 'cert_level';
+	my $question 	= param 'question';
 	
 
 	
-	use Data::Dumper;
-	var answers => Dumper $answers;
+
 	
 	my $time = time;
 	var time => $time;
 	my $data = {
-	    	question => $question,
+	    question => $question,
 		date_created => $time,
 		answer => '',
 		category => $category,
@@ -350,7 +440,7 @@ post '/c/new-multiple-choice-quiz' => sub {
 		    parent_id => $parent_id,
 		    mc_option => $option,
 		});
-		if (grep($x == $_,@{$answers})) {
+		if (grep($x == $_,@answers)) {
 		    push(@answers_update,$insert_o->id);
 		}
 		$x++;

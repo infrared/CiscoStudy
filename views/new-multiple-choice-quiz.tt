@@ -2,19 +2,21 @@
 
 <h1>New Multiple Choice Quiz</h1>
 
-[% vars.id %]
-[% vars.time %]
-[% vars.answers %]
 
-<form method="post" action="/c/new-multiple-choice-quiz">
+<form method="post" enctype="multipart/form-data" action="/c/new-multiple-choice-quiz">
 
 <textarea rows="6" cols="50" name="question"></textarea>
 
 <table border="0">
     
 <tr><td>Category</td><td><select name="category"><option value="IOS">IOS</option></select></td></tr>
-<tr><td>Cert Level</td><td><select name="cert_level"><option value="ccent">ccent</option></select></td></tr>
-
+<tr><td>Cert Level</td><td><select name="cert_level">
+    <option value="ccent">ccent</option>
+    <option value="ccent">ccna</option>
+    <option value="ccent">ccnp</option>
+    </select></td></tr>
+<tr><td>Image to upload (optional)</td><td><input type="file" name="upfile"></td></tr>
+<tr><td colspan="2"><br /></td></tr>
 <tr>
     <td><input type="checkbox" name="id" value="1" />
     <td><input type="text" name="option"></td>
