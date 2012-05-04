@@ -1,0 +1,15 @@
+[% INCLUDE header.tt %]
+
+<h1>New Category</h1>
+[% IF vars.success.defined %]
+    <p><b>Successfully created new category</b></p>
+[% END %]
+[% IF vars.cat_exists.defined %]
+    <p><b>Error: Category already exists</b></p>
+[% END %]
+<form method="POST" action="/c/new-category">
+    <input type="text" name="category">
+    <input type="submit" value="Create">
+</form>
+
+[% INCLUDE footer.tt %]

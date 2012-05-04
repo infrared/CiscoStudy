@@ -2,6 +2,9 @@
 
 <h1>Quiz</h1>
 
+[% IF vars.image.defined %]
+<img src="/images/mc_quiz/[% vars.image %]" />
+[% END %]
 <p>[% vars.question %]</p>
 
 <form method="post" action="/cisco-quiz-multiple-choice">

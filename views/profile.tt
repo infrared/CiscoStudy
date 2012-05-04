@@ -14,5 +14,6 @@
 </table>
 <p><a href="/c/change-password">change password</a></p>
 <p><a href="/c/change-email">change email</a></p>
+<p><a href="/c/change-picture">change picture</a></p>
 
 [% INCLUDE footer.tt %]

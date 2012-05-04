@@ -1,0 +1,13 @@
+[% INCLUDE header.tt %]
+
+<h1>Categories</h1>
+
+<table>
+[% FOREACH cat IN vars.categories %]
+    <tr><td>[% cat.id %]</td><td>[% cat.category %]</td></tr>
+[% END %]
+</table>
+
+<a href="/c/new-category">New Category</a>
+
+[% INCLUDE footer.tt %]

@@ -2,6 +2,21 @@
 
 <h1>New Multiple Choice Quiz</h1>
 
+[% IF vars.id.defined %]
+    <b>Successfully created new quiz with id: <a href="/cisco-quiz-multiple-choice/[% vars.id %]">[% vars.id %]</a></b><br />
+[% END %]
+[% IF vars.size_error.defined %]
+    <b>Image too large</b><br />
+[% END %]
+[% IF vars.invalid_type.defined %]
+    <b>Invalid file type</b><br />
+[% END %]
+[% IF vars.invalid_form.defined %]
+    <b>Errors in form input</b><br />
+[% END %]
+[% IF vars.empty_option.defined %]
+    <b>Can't have an answer assigned to empty text</b><br />
+[% END %]
 
 <form method="post" enctype="multipart/form-data" action="/c/new-multiple-choice-quiz">
 
@@ -9,7 +24,11 @@
 
 <table border="0">
     
-<tr><td>Category</td><td><select name="category"><option value="IOS">IOS</option></select></td></tr>
+<tr><td>Category</td><td><select name="category">
+[% FOREACH cat IN vars.categories %]
+    <option value="[% cat.category %]">[% cat.category %]</option>
+[% END %]
+</select></td></tr>
 <tr><td>Cert Level</td><td><select name="cert_level">
     <option value="ccent">ccent</option>
     <option value="ccent">ccna</option>

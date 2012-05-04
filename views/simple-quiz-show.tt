@@ -4,7 +4,7 @@
 <form method="POST" action="/c/simple-quiz-show">
     <select name="category">
     [% FOREACH cat IN vars.categories %]
-        <option value="[% cat %]">[% cat %]</option>
+        <option value="[% cat.category %]">[% cat.category %]</option>
     [% END %]
     </select>
     <select name="cert_level">

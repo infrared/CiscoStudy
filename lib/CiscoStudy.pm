@@ -120,6 +120,44 @@ get '/subnetting-how-to' => sub {
 get '/how-to-calculate-network-address' => sub {
 	template 'calculate-network-address.tt';
 };
+
+get '/c/categories' => sub {
+	if (session('moderator')) {
+		var categories => &categories;
+		template 'categories.tt';
+	}
+	else {
+		template 'permission-denied.tt';
+	}
+};
+get '/c/new-category' => sub {
+	if (session('moderator')) {
+		template 'new-category.tt';
+	}
+	else {
+		template 'permission-denied.tt';
+	}
+};
+post '/c/new-category' => sub {
+	if (session('moderator')) {
+		my $category = param 'category';
+		my $search = schema->resultset('Category')->search({ category => $category });
+		if ($search->count) {
+			var cat_exists => 1;
+	
+		}
+		else {
+			my $insert = schema->resultset('Category')->create({ category => $category });
+			if ($insert->id) {
+				var success => 1;
+			}
+		}
+		template 'new-category.tt';
+	}
+	else {
+		template 'permission-denied.tt';
+	}
+};
 get '/c/change-timezone' => sub {
 	use DateTime::TimeZone;
 	my @timezones = DateTime::TimeZone->all_names;
@@ -144,6 +182,10 @@ post '/c/change-timezone' => sub {
 };
 get '/c/change-email' => sub {
 	template 'change-email.tt';
+};
+
+get '/c/change-picture' => sub {
+	template 'change-picture.tt';
 };
 post '/c/change-email' => sub {
 	my $email = param 'email';
@@ -232,6 +274,7 @@ get '/c/users' => sub {
 
 get '/c/new-simple-quiz' => sub {
 	if (session('contributor')) {
+		var categories => &categories;
 		template 'new-simple-quiz.tt';
 	}
 	else {
@@ -258,19 +301,7 @@ get '/c/simple-quiz-show' => sub {
 		}
 		var rows => \@rows;
 	}	
-	my $filter = schema->resultset('SimpleQuiz')->search(
-		undef,
-		{
-			columns => [ qw/ category /],
-			distinct => 1,
-
-		}
-	);
-	my @categories;
-	while(my $row = $filter->next) {
-		push(@categories,$row->category);
-	}
-	var categories => \@categories;
+	var categories => &categories;
 
 	template 'simple-quiz-show.tt';
 
@@ -299,19 +330,8 @@ post '/c/simple-quiz-show' => sub {
 		var rows => \@rows;
 	}
 	
-	my $filter = schema->resultset('SimpleQuiz')->search(
-		undef,
-		{
-			columns => [ qw/ category /],
-			distinct => 1,
 
-		}
-	);
-	my @categories;
-	while(my $row = $filter->next) {
-		push(@categories,$row->category);
-	}
-	var categories => \@categories;
+	var categories => &categories;
 	template 'simple-quiz-show.tt';
 	
 };
@@ -379,77 +399,138 @@ post '/c/new-simple-quiz' => sub {
 
 
 get '/c/new-multiple-choice-quiz' => sub {
+	var categories => &categories;
     template 'new-multiple-choice-quiz.tt';
 };
 
 post '/c/new-multiple-choice-quiz' => sub {
 	
-	my $file  = request->upload('upfile');
-	
-	$file->copy_to('/home/infrared/dev/CiscoStudy/public/images/mc_quiz');
-	
-	var type => $file->type;
+	my $trap;
+	my $newfile;
+	if(  my $file  = request->upload('upfile') ) {
+		
+		my $type = $file->type;
+		my $size = $file->size;
+		my @allowed = ('image/jpeg');
+		if (grep($type eq $_, @allowed)) {
+			
+			if ($size < 524288) {
+				
+				my ($ext) = ($type =~ /^image\/(jpeg|gif|png)/);
+				$newfile = time . ".$ext";
+		
+				$file->copy_to("/home/infrared/dev/CiscoStudy/public/images/mc_quiz/$newfile");
+			}
+			else {
+				var size_error => 1;
+				$trap++;
+				
+			}
+		}
+		else {
+			var invalid_type => 1;
+			$trap++;
+		}
+	}
 
-	my @answers;
-	my $ids = param 'id';
 	
-	if (ref $ids ne 'ARRAY') {
-		push (@answers,$ids);
+	if (!$trap) {
+
+		my @answers;
+		my $ids = param 'id';
+		
+		if ($ids) {
+	
+			if (ref $ids ne 'ARRAY') {
+				push (@answers,$ids);
+			}
+			else {
+				@answers = @{$ids};
+			}
+			
+			
+			
+			my ($options) =  param 'option';
+			
+			if (ref $options eq 'ARRAY') {
+			
+			
+								
+				foreach(@answers) {
+					if (!length @$options[$_ - 1]) {
+						var empty_option => 1;
+						$trap++;
+					}
+					
+				}
+				my $x = 0;
+				foreach (@$options) {
+					delete @$options[$x] unless length @$options[$x];
+					$x++;
+				}
+				
+				if (!$trap) {
+					
+					my $user_id 	= session 'user_id';
+					my $category 	= param 'category';
+					my $cert_level 	= param 'cert_level';
+					my $question 	= param 'question';
+					
+					if (length $question) {
+						
+	
+						my $time = time;
+		
+						my $data = {
+							question => $question,
+							image => $newfile,
+							date_created => $time,
+							answer => '',
+							category => $category,
+							cert_level => $cert_level,
+							contributor => $user_id,
+						};
+	
+						my $insert = schema->resultset('MCQuiz')->create($data);
+						if ($insert->id) {
+							my @answers_update;
+							my $parent_id = $insert->id;
+							var id => $parent_id;
+							my $x = 1;
+							foreach my $option (@{ $options }) {
+								my $insert_o = schema->resultset('MCQuizOption')->create({
+									parent_id => $parent_id,
+									mc_option => $option,
+								});
+								if (grep($x == $_,@answers)) {
+									push(@answers_update,$insert_o->id);
+								}
+								$x++;
+							}
+							my $answer_update = join(',', @answers_update);
+							$insert->update({ answer => $answer_update });
+						}
+					}
+					else {
+						var invalid_form => 1;
+					}
+				}
+				else {
+					var invalid_form => 1;
+				}
+			}
+			else {
+				var invalid_form => 1;
+			}
+		}
+		else {
+			var invalid_form => 1;
+		}
 	}
 	else {
-		@answers = @{$ids};
+		var invalid_form => 1;
 	}
-	
-
-	my ($options) =  param 'option';
-	
-	my $x = 0;
-	foreach (@$options) {
-	    delete @$options[$x] unless length @$options[$x];
-	    $x++;
-	}
-	
-	my $user_id 	= session 'user_id';
-	my $category 	= param 'category';
-	my $cert_level 	= param 'cert_level';
-	my $question 	= param 'question';
-	
-
-	
-
-	
-	my $time = time;
-	var time => $time;
-	my $data = {
-	    question => $question,
-		date_created => $time,
-		answer => '',
-		category => $category,
-		cert_level => $cert_level,
-		contributor => $user_id,
-	};
-	
-	my $insert = schema->resultset('MCQuiz')->create($data);
-	if ($insert->id) {
-	    my @answers_update;
-	    my $parent_id = $insert->id;
-	    var id => $parent_id;
-	    my $x = 1;
-	    foreach my $option (@{ $options }) {
-		my $insert_o = schema->resultset('MCQuizOption')->create({
-		    parent_id => $parent_id,
-		    mc_option => $option,
-		});
-		if (grep($x == $_,@answers)) {
-		    push(@answers_update,$insert_o->id);
-		}
-		$x++;
-	    }
-	    my $answer_update = join(',', @answers_update);
-	    $insert->update({ answer => $answer_update });
-	}
-	
-	
+	var categories => &categories;
 	
 	template 'new-multiple-choice-quiz.tt';
 	
@@ -520,7 +601,35 @@ get '/cisco-quiz-multiple-choice' => sub {
 	template 'quiz-multiple-choice';
 	
 };
-
+get '/cisco-quiz-multiple-choice/*' => sub {
+	
+	my ($id) = splat;
+	
+	
+	my $search = schema->resultset('MCQuiz')->find($id);
+    if ($search) {
+    
+	var question => $search->question;
+	var image    => $search->image;
+        my $options = schema->resultset('MCQuizOption')->search({ parent_id => $id });
+        my @ids;
+        
+        while(my $row = $options->next) {
+			my $hash;
+			$hash->{id} = $row->mco_id;
+			$hash->{option} = $row->mc_option;
+			push(@ids,$hash);
+           
+        }
+        my @shuffled = shuffle(@ids);
+		var id => $id;
+		var options => \@shuffled;
+#		use Data::Dumper;
+#		var list => Dumper session('list');
+	}
+	template 'quiz-multiple-choice';
+	
+};
 post '/cisco-quiz-multiple-choice' => sub {
 	my $id = param 'id';
 	my $guess = param 'option';
@@ -548,4 +657,17 @@ post '/cisco-quiz-multiple-choice' => sub {
 	template 'quiz-multiple-choice';
 };
 
+sub categories {
+	my $cat = schema->resultset('Category')->search;
+	my @categories;
+	while(my $row = $cat->next) {
+		my $hash = {
+			id => $row->cat_id,
+			category => $row->category,
+		};
+		push(@categories,$hash);
+	}
+	
+	return \@categories;
+}
 true;

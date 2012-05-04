@@ -15,6 +15,7 @@
 	<br /><br />
 	<b>Management</b><br />
 	<a href="/c/simple-quiz-menu">Quiz Questions</a><br />
+	[% IF session.moderator.defined %]<a href="/c/categories">Categories</a><br />[% END %]
 	[% IF session.role == 'admin' %]<a href="/c/users">Users</a><br />[% END %]
 	[% END %]
 	
