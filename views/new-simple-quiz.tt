@@ -24,7 +24,7 @@
 
 <tr><td>Category</td><td><select name="category">
 [% FOREACH cat IN vars.categories %]
-    <option value="[% cat.catgory %]">[% cat.category %]</option>
+    <option value="[% cat.category %]">[% cat.category %]</option>
 [% END %]
 </select></td></tr>
 

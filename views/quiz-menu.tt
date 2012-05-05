@@ -1,0 +1,9 @@
+[% INCLUDE header.tt %]
+
+<h1>Quiz</h1>
+
+<a href="/cisco-quiz-multiple-choice">Multiple Choice Quiz</a><br /><br />
+
+<a href="/simple-quiz">Basic Quiz</a>
+
+[% INCLUDE footer.tt %]

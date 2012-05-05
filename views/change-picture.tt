@@ -2,7 +2,14 @@
 
 <h1>Edit your picture</h1>
 
-<form method="POST" action="/c/change-picture">
+[% IF vars.success.defined %]
+    <p><b>Successfully updated picture preferences</b></p>
+[% END %]
+
+[% IF vars.error.defined %]
+    <p><b>error</b></p>
+[% END %]
+<form method="POST" action="/c/change-picture/email">
 <table>
     <tr><td><input type="checkbox" name="option" value="use_email" /> </td><td align="left">Use my email address (gravatar.com)</td></tr>
     <tr><td><input type="submit" value="Update"</td></tr>
@@ -11,10 +18,11 @@
 <hr>
 <h2>or</h2>
 
-<form method="POST" action="/c/change-picture">
+<form method="POST" enctype="multipart/form-data" action="/c/change-picture/upload">
 <table>
     
     <tr><td>Upload your own</td><td><input type="file" name="upfile"/></td></tr>
+    <tr><td colspan="2"><p>(image will be resized to 40x40)</p></td></tr>
     <tr><td><input type="submit" value="Update"</td></tr>
 </table>
 </form>
@@ -22,7 +30,7 @@
 <hr>
 <h2>or</h2>
 
-<form method="POST" action="/c/change-picture">
+<form method="POST" action="/c/change-picture/none">
 <table>
     <tr><td><input type="checkbox" name="none" value="no_picture" /> </td><td align="left">No picture please</td></tr>
     <tr><td><input type="submit" value="Update"</td></tr>

@@ -10,6 +10,7 @@ use URI::Escape qw(uri_escape);
 use Digest::MD5 qw(md5_hex);
 use Email::Valid;
 use DateTime;
+use Image::Resize;
 #use DateTime::TimeZone
 
 our $VERSION = '0.1';
@@ -48,6 +49,23 @@ post '/login' => sub {
             session user_id       => $row->user_id;
 			session role          => $row->role;
 			session timezone	  => $row->timezone;
+			#session avatar_method => $row->avatar_method;
+			#session avatar_value  => $row->avatar_value;
+			
+			# avatar
+			
+			if ($row->avatar_method eq 'disk') {
+				session avatar => '<img src="/images/avatar/' . $row->avatar_value . '" />';
+			}
+			elsif ($row->avatar_method eq 'email') {
+				my $default;
+				my $size = 40;
+				session avatar => "http://www.gravatar.com/avatar/". md5_hex(lc $row->email). "\?d=".uri_escape($default). "\&s=".$size;
+			}
+			else {
+				session avatar => '';
+			}
+					
 			
 			
 			if ($row->role eq 'admin') {
@@ -80,13 +98,7 @@ post '/login' => sub {
 
 };
 get '/profile' => sub {
-	my $user_id = session 'user_id';
-	my $email = 'michael@kroher.net';
-	my $default;
-	my $size = 40;
-
-    my $gravitar = "http://www.gravatar.com/avatar/". md5_hex(lc $email). "\?d=".uri_escape($default). "\&s=".$size;
-	var gravitar => $gravitar;
+	var avatar => avatar(session 'user_id');
 	template 'profile.tt';
 };
 
@@ -185,6 +197,61 @@ get '/c/change-email' => sub {
 };
 
 get '/c/change-picture' => sub {
+	template 'change-picture.tt';
+};
+post '/c/change-picture/upload' => sub {
+	my $trap;
+	my $newfile;
+	if(  my $file  = request->upload('upfile') ) {
+		
+		my $type = $file->type;
+		my $size = $file->size;
+		
+		
+		my @allowed = ('image/jpeg');
+		if (grep($type eq $_, @allowed)) {
+								
+			if ($size < 524288) {
+				
+				my $temp = $file->tempname;
+				    
+				my $image = Image::Resize->new($temp);
+				my $gd = $image->resize(40, 40);
+				
+				my ($ext) = ($type =~ /^image\/(jpeg|gif|png)/);
+				$newfile = (int rand 999 + 100) .'-'. time . ".$ext";
+				
+				open(my $fh,">","/home/infrared/dev/CiscoStudy/public/images/avatar/$newfile");
+				binmode $fh;
+				print $fh $gd->$ext;
+				close $fh;
+		
+				#$file->copy_to("/home/infrared/dev/CiscoStudy/public/images/avatar/$newfile");
+			}
+			else {
+				var size_error => 1;
+				$trap++;
+				
+			}
+		}
+		else {
+			var invalid_type => 1;
+			$trap++;
+		}
+	}
+	if (!$trap) {
+		my $user_id = session 'user_id';
+		my $user = schema->resultset('Users')->find($user_id)->update({
+			avatar_method => 'disk',
+			avatar_value => '<img src="/images/avatar/' . $newfile . '" />',
+		});
+		if ($user->id) {
+			var success => 1;
+		}
+	}
+	else {
+		var error => 1;
+	}
 	template 'change-picture.tt';
 };
 post '/c/change-email' => sub {
@@ -306,6 +373,35 @@ get '/c/simple-quiz-show' => sub {
 	template 'simple-quiz-show.tt';
 
 };
+get '/c/edit-simple-quiz/*' => sub {
+	
+	
+	if (session('moderator')) {
+		
+		my ($quiz_id) = splat;
+		session quiz_edit => $quiz_id;
+		
+		var categories => &categories;
+		
+		
+		my $quiz = schema->resultset('SimpleQuiz')->find($quiz_id);
+		
+		my $hash = {
+			cert_level => $quiz->cert_level,
+			category => $quiz->category,
+			question => $quiz->question,
+			answer   => $quiz->answer,
+			contributor => $quiz->contributor,
+		};
+		var quiz => $hash;
+		
+
+		template 'edit-simple-quiz';
+	}
+	else {
+		template 'permission-denied';
+	}
+};
 post '/c/simple-quiz-show' => sub {
 	
 	my $category = param 'category';
@@ -417,7 +513,7 @@ post '/c/new-multiple-choice-quiz' => sub {
 			if ($size < 524288) {
 				
 				my ($ext) = ($type =~ /^image\/(jpeg|gif|png)/);
-				$newfile = time . ".$ext";
+				$newfile = (int rand 999 + 100) .'-'. time . ".$ext";
 		
 				$file->copy_to("/home/infrared/dev/CiscoStudy/public/images/mc_quiz/$newfile");
 			}
@@ -570,6 +666,8 @@ get '/cisco-quiz-multiple-choice' => sub {
 	
 	my $list = session('list');
 	
+	if (@{$list} > 0) {
+	
 	my $random = int rand (scalar @{ $list });
 	
 	my $id = @$list[$random];
@@ -597,6 +695,12 @@ get '/cisco-quiz-multiple-choice' => sub {
 		var options => \@shuffled;
 #		use Data::Dumper;
 #		var list => Dumper session('list');
+	}
+	}
+	else {
+		var done => 1;
+		session list => undef;
+		session start => undef;
 	}
 	template 'quiz-multiple-choice';
 	
@@ -653,10 +757,19 @@ post '/cisco-quiz-multiple-choice' => sub {
 		var correct => "1";
 		
 	}
+	else {
+		var wrong => 1;
+		var id => $id;
+	}
 
 	template 'quiz-multiple-choice';
 };
 
+
+get '/quiz-menu' => sub {
+	template 'quiz-menu.tt';
+	
+};
 sub categories {
 	my $cat = schema->resultset('Category')->search;
 	my @categories;
@@ -669,5 +782,11 @@ sub categories {
 	}
 	
 	return \@categories;
+}
+sub avatar {
+	my $user_id = shift;
+	my $user = schema->resultset('Users')->find($user_id);
+	return $user->avatar_value;
+	
 }
 true;

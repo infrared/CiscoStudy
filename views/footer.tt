@@ -2,7 +2,8 @@
 
 <div id="Menu">
 	<a href="/irc">IRC</a><br />
-	<a href="/definitions">Definitions</a>
+	<a href="/quiz-menu">Quiz</a><br />
+	<!-- <a href="/definitions">Definitions</a> -->
 	
 	<br />
 	[% IF session.authenticated.defined %]

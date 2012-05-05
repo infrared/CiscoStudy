@@ -20,7 +20,7 @@
 
 <table>
     [% FOREACH row IN vars.rows %]
-        <tr><td><a href="/c/edit-simple-quiz/[% row.id %]">[% row.id %]</a></td><td>[% row.question %]</td><td>[% row.answer %]</td></tr>
+        <tr><td valign="top"><a href="/c/edit-simple-quiz/[% row.id %]">(edit)</a></td><td valign="top">[% row.question %]</td><td>[% row.answer %]</td></tr>
     [% END %]
 </table>
 

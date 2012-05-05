@@ -2,6 +2,32 @@
 
 <h1>Quiz</h1>
 
+
+[% IF vars.done.defined %]
+    <p><b>No more questions left!</b></p>
+    <p>Your session has been cleared and you can start over</p>
+[% ELSE %]
+
+
+    [% IF params.submit.defined %]
+
+    [% IF vars.correct.defined %]
+        <p><b>Correct!</b></p><br /><br />
+        <a href="/cisco-quiz-multiple-choice">Next --></a>
+    [% END %]
+    [% IF vars.wrong.defined %]
+        <p><b>Nope :(</b><br /><br /></p>
+        <a href="/cisco-quiz-multiple-choice/[% vars.id %]">Try again</a> or
+        <a href="/cisco-quiz-multiple-choice">Try a different one</a>
+    [% END %]
+
+
+
+
+[% ELSE %]
+
+
+
 [% IF vars.image.defined %]
 <img src="/images/mc_quiz/[% vars.image %]" />
 [% END %]
@@ -15,12 +41,11 @@
 <tr><td><input type="checkbox" name="option" value="[% option.id %]" />[% option.option %]</td></tr>
 [% END %]
 </table>
-<input type="submit" value="Submit">
+<input type="submit" name="submit" value="Submit">
 </form>
 
-
-[% IF vars.correct.defined %]
-   <p><b>Correct!</b></p>
 [% END %]
+[% END %]
+
 
 [% INCLUDE footer.tt %]
