@@ -44,6 +44,9 @@
 <input type="submit" name="submit" value="Submit">
 </form>
 
+<br />
+<p>Quiz question contributed by: [% vars.contributor.username %] /  [% vars.date_created %]</p>
+
 [% END %]
 [% END %]
 

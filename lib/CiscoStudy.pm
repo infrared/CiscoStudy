@@ -680,6 +680,14 @@ get '/cisco-quiz-multiple-choice' => sub {
     if ($search) {
     
 	var question => $search->question;
+	var image    => $search->image;
+	my $date = $search->date_created;
+	if (my $created = date($date)) {
+		var date_created => $created;
+		
+		
+	}
+	var contributor => user($search->contributor);
         my $options = schema->resultset('MCQuizOption')->search({ parent_id => $id });
         my @ids;
         
@@ -715,6 +723,13 @@ get '/cisco-quiz-multiple-choice/*' => sub {
     
 	var question => $search->question;
 	var image    => $search->image;
+		my $date = $search->date_created;
+	if (my $created = date($date)) {
+		var date_created => $created;
+		
+		
+	}
+	var contributor => user($search->contributor);
         my $options = schema->resultset('MCQuizOption')->search({ parent_id => $id });
         my @ids;
         
@@ -789,4 +804,36 @@ sub avatar {
 	return $user->avatar_value;
 	
 }
+sub date {
+	
+	my ($epoch) = shift;
+	if (length session('timezone')) {
+		
+		my $dt = DateTime->from_epoch( epoch => $epoch )->set_time_zone( session('timezone') );
+		
+							   
+		return sprintf("%3s %02d, %04d - %02d:%02d:%02d", $dt->month_abbr,$dt->day, $dt->year,$dt->hour,$dt->min,$dt->sec);
+
+						   
+	}
+	else {
+		return 0;
+	}
+	
+	
+}
+
+sub user {
+	my ($user_id) = @_;
+	my $user = schema->resultset('Users')->find($user_id);
+	
+	my $hash = {
+		username => $user->username,
+		avatar   => $user->avatar_value,
+		
+	};
+	return $hash;
+}
+
+
 true;
