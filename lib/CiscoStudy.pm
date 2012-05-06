@@ -380,6 +380,7 @@ get '/c/edit-simple-quiz/*' => sub {
 		
 		my ($quiz_id) = splat;
 		session quiz_edit => $quiz_id;
+		var id => $quiz_id;
 		
 		var categories => &categories;
 		
@@ -396,12 +397,93 @@ get '/c/edit-simple-quiz/*' => sub {
 		var quiz => $hash;
 		
 
-		template 'edit-simple-quiz';
+		template 'edit-simple-quiz.tt';
 	}
 	else {
 		template 'permission-denied';
 	}
 };
+post '/c/edit-simple-quiz/*' => sub {
+	if (session('moderator')) {
+		my ($quiz_id) = splat;
+		
+		if (session('quiz_edit') == $quiz_id) {
+			
+			my $cert_level = param 'cert_level';
+			my $category   = param 'category';
+			my $question   = param 'question';
+			my $answer     = param 'answer';
+			my $user_id    = session 'user_id';
+			
+			if ( length $cert_level && length $category && length $question && length $answer) {
+				
+				my $insert = schema->resultset('SimpleQuiz')->find($quiz_id)->update({
+					cert_level => $cert_level,
+					category   => $category,
+					question   => $question,
+					answer     => $answer,
+					contributor => $user_id,
+				});
+				if ($insert->id) {
+					var success => 1;
+					var id => $insert->id;
+					my $hash = {
+						cert_level => $insert->cert_level,
+						category => $insert->category,
+						question => $insert->question,
+						answer   => $insert->answer,
+						contributor => $insert->contributor,
+					};
+					var quiz => $hash;
+								
+				}
+				else {
+					var error => 1;
+				}
+			}
+			else {
+				var formerror => 1;
+			}
+		}
+		else {
+			var iderror => 1;
+		}
+		var categories => &categories;
+		template 'edit-simple-quiz.tt';
+		
+	}
+	else {
+		template 'permission-denied.tt';
+	}
+};
+
+get '/c/delete-simple-quiz/*' => sub {
+	if (session('moderator')) {
+		my ($quiz_id) = splat;
+		
+		if (session('quiz_edit') == $quiz_id) {
+			
+			my $quiz = schema->resultset('SimpleQuiz')->find($quiz_id)->delete;
+			
+			if ($quiz->id) {
+				var success => 1;
+				session quiz_edit => undef;
+			}
+			else {
+				var error => 1;
+				
+			}
+		}
+		else {
+			var iderror => 1;
+		}
+		template 'delete-simple-quiz.tt';
+	}
+	else {
+		template 'permission-denied.tt';
+	}
+};
+
 post '/c/simple-quiz-show' => sub {
 	
 	my $category = param 'category';
@@ -680,6 +762,25 @@ get '/cisco-quiz-multiple-choice' => sub {
     if ($search) {
     
 	var question => $search->question;
+	
+	my (@answers) = ($search->answer =~ /(\d+)/g);
+	
+	my $map = {
+		1 => 'one',
+		2 => 'two',
+		3 => 'three',
+		4 => 'four',
+		5 => 'five',
+		6 => 'six',
+		7 => 'seven',
+		8 => 'eight',
+		9 => 'nine',
+		10 => 'ten',
+	};
+	my $size = scalar @answers;
+	
+	var choose => $map->{$size};
+	
 	var image    => $search->image;
 	my $date = $search->date_created;
 	if (my $created = date($date)) {
@@ -722,6 +823,23 @@ get '/cisco-quiz-multiple-choice/*' => sub {
     if ($search) {
     
 	var question => $search->question;
+	my (@answers) = ($search->answer =~ /(\d+)/g);
+	
+	my $map = {
+		1 => 'one',
+		2 => 'two',
+		3 => 'three',
+		4 => 'four',
+		5 => 'five',
+		6 => 'six',
+		7 => 'seven',
+		8 => 'eight',
+		9 => 'nine',
+		10 => 'ten',
+	};
+	my $size = scalar @answers;
+	
+	var choose => $map->{$size};
 	var image    => $search->image;
 		my $date = $search->date_created;
 	if (my $created = date($date)) {
@@ -829,7 +947,8 @@ sub user {
 	
 	my $hash = {
 		username => $user->username,
-		avatar   => $user->avatar_value,
+		avatar_method => $user->avatar_method,
+		avatar_value   => $user->avatar_value,
 		
 	};
 	return $hash;

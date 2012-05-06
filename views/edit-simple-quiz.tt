@@ -14,7 +14,7 @@
 [% END %]
 
 
-<form method="POST" action="/c/edit-simple-quiz">
+<form method="POST" action="/c/edit-simple-quiz/[% vars.id %]">
 <table>
 <tr><td>Level</td><td><select name="cert_level">
     <option value="ccent" [% IF vars.quiz.cert_level == 'ccent' %] SELECTED[% END %]>CCENT</option>
@@ -24,7 +24,7 @@
 
 <tr><td>Category</td><td><select name="category">
 [% FOREACH cat IN vars.categories %]
-    <option value="[% cat.catgory %]" [% IF cat.category == vars.quiz.category %] SELECTED[% END %]>[% cat.category %]</option>
+    <option value="[% cat.category %]" [% IF cat.category == vars.quiz.category %] SELECTED[% END %]>[% cat.category %]</option>
 [% END %]
 </select></td></tr>
 
@@ -32,10 +32,12 @@
 
 <tr><td>Answer:</td><td><input type="text" name="answer" value="[% vars.quiz.answer %]"> Example: conf(igure) t(erminal)</td></tr>
 
-<tr><td colspan="2"><input type="submit" value="Add"></td></tr>
+<tr><td colspan="2"><input type="submit" value="Edit"></td></tr>
 
 
 </table>
+
+<a href="/c/delete-simple-quiz/[% vars.id %]">Click here to delete this quiz question</a>
 </form>
 
 

@@ -1,0 +1,10 @@
+[% INCLUDE header.tt %]
+
+[% IF vars.success.defined %]
+
+<p><b>Quiz question successfully deleted</b></p>
+
+
+[% END %]
+
+[% INCLUDE footer.tt %]

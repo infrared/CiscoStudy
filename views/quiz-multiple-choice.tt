@@ -32,7 +32,7 @@
 <img src="/images/mc_quiz/[% vars.image %]" />
 [% END %]
 <p>[% vars.question %]</p>
-
+<p>(Choose [% vars.choose %])</p>
 <form method="post" action="/cisco-quiz-multiple-choice">
 <input type="hidden" name="id" value="[% vars.id %]">
 <table border="0">

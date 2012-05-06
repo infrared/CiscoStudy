@@ -11,30 +11,33 @@
 [% END %]
 <form method="POST" action="/c/change-picture/email">
 <table>
-    <tr><td><input type="checkbox" name="option" value="use_email" /> </td><td align="left">Use my email address (gravatar.com)</td></tr>
-    <tr><td><input type="submit" value="Update"</td></tr>
-</table>
-</form>
-<hr>
-<h2>or</h2>
+    <tr><td><input type="radio" name="picture" value="email" /> </td><td align="left">Use my email address (gravatar.com)</td></tr>
 
-<form method="POST" enctype="multipart/form-data" action="/c/change-picture/upload">
+</table>
+
+<hr>
+<h3>or</h3>
+
+
 <table>
     
-    <tr><td>Upload your own</td><td><input type="file" name="upfile"/></td></tr>
+    <tr><td><input type="radio" name="picture" value="upload" /><td>Use my own <input type="file" name="upfile"/></td></tr>
     <tr><td colspan="2"><p>(image will be resized to 40x40)</p></td></tr>
-    <tr><td><input type="submit" value="Update"</td></tr>
+
 </table>
-</form>
+
 
 <hr>
-<h2>or</h2>
+<h3>or</h3>
 
-<form method="POST" action="/c/change-picture/none">
+
 <table>
-    <tr><td><input type="checkbox" name="none" value="no_picture" /> </td><td align="left">No picture please</td></tr>
-    <tr><td><input type="submit" value="Update"</td></tr>
+    <tr><td><input type="radio" name="picture" value="no_picture" /> </td><td align="left">No picture please</td></tr>
+
 </table>
+
+<br /><br />
+<input type="submit" value="Update" />
 </form>
 
 
