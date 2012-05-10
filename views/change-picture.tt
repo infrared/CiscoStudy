@@ -9,9 +9,14 @@
 [% IF vars.error.defined %]
     <p><b>error</b></p>
 [% END %]
-<form method="POST" action="/c/change-picture/email">
+[% IF vars.size_error.defined %]
+    <p><b>size error</b></p>
+[% END %]
+
+
+<form method="POST" enctype="multipart/form-data" action="/c/change-picture">
 <table>
-    <tr><td><input type="radio" name="picture" value="email" /> </td><td align="left">Use my email address (gravatar.com)</td></tr>
+    <tr><td><input type="radio" name="picture" value="gravatar" [% IF vars.user.avatar_method == 'gravatar' %] checked="checked"[% END %]> </td><td align="left">Use my email address (gravatar.com)</td></tr>
 
 </table>
 
@@ -19,9 +24,11 @@
 <h3>or</h3>
 
 
+
+
 <table>
     
-    <tr><td><input type="radio" name="picture" value="upload" /><td>Use my own <input type="file" name="upfile"/></td></tr>
+    <tr><td><input type="radio" name="picture" value="disk" [% IF vars.user.avatar_method == 'disk' %] checked="checked"[% END %]><td>Use my own <input type="file" name="upfile"/></td></tr>
     <tr><td colspan="2"><p>(image will be resized to 40x40)</p></td></tr>
 
 </table>
@@ -32,7 +39,7 @@
 
 
 <table>
-    <tr><td><input type="radio" name="picture" value="no_picture" /> </td><td align="left">No picture please</td></tr>
+    <tr><td><input type="radio" name="picture" value="none" [% IF ! vars.user.avatar_method.length %] checked="checked"[% END %]> </td><td align="left">No picture please</td></tr>
 
 </table>
 

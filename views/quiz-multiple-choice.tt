@@ -45,7 +45,9 @@
 </form>
 
 <br />
+[% IF session.authenticated.defined %]
 <p>Quiz question contributed by: [% vars.contributor.username %] /  [% vars.date_created %]</p>
+[% END %]
 
 [% END %]
 [% END %]

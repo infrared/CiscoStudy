@@ -53,7 +53,7 @@ post '/login' => sub {
 			#session avatar_value  => $row->avatar_value;
 			
 			# avatar
-			
+=cut			
 			if ($row->avatar_method eq 'disk') {
 				session avatar => '<img src="/images/avatar/' . $row->avatar_value . '" />';
 			}
@@ -65,7 +65,7 @@ post '/login' => sub {
 			else {
 				session avatar => '';
 			}
-					
+=cut
 			
 			
 			if ($row->role eq 'admin') {
@@ -98,7 +98,9 @@ post '/login' => sub {
 
 };
 get '/profile' => sub {
-	var avatar => avatar(session 'user_id');
+	my $user_id = session('user_id');
+	
+	var user => &get_user($user_id);
 	template 'profile.tt';
 };
 
@@ -197,61 +199,105 @@ get '/c/change-email' => sub {
 };
 
 get '/c/change-picture' => sub {
+	my $user_id = session 'user_id';
+	var user => &get_user($user_id);
+	
 	template 'change-picture.tt';
 };
-post '/c/change-picture/upload' => sub {
-	my $trap;
-	my $newfile;
-	if(  my $file  = request->upload('upfile') ) {
+post '/c/change-picture' => sub {
+	
+	my $method = param 'picture';
+	my $user_id = session 'user_id';
+	my $user = schema->resultset('Users')->find($user_id);
+	
+	
+	if ($method eq 'disk') {
+		my $trap;
+		my $newfile;
+		if(  my $file  = request->upload('upfile') ) {
 		
-		my $type = $file->type;
-		my $size = $file->size;
+			my $type = $file->type;
+			my $size = $file->size;
 		
 		
-		my @allowed = ('image/jpeg');
-		if (grep($type eq $_, @allowed)) {
+			my @allowed = ('image/jpeg');
+			if (grep($type eq $_, @allowed)) {
 								
-			if ($size < 524288) {
+				if ($size < 524288) {
 				
-				my $temp = $file->tempname;
+					my $temp = $file->tempname;
 				    
-				my $image = Image::Resize->new($temp);
-				my $gd = $image->resize(40, 40);
+					my $image = Image::Resize->new($temp);
+					my $gd = $image->resize(40, 40);
 				
-				my ($ext) = ($type =~ /^image\/(jpeg|gif|png)/);
-				$newfile = (int rand 999 + 100) .'-'. time . ".$ext";
+					my ($ext) = ($type =~ /^image\/(jpeg|gif|png)/);
+					$newfile = (int rand 999 + 100) .'-'. time . ".$ext";
 				
-				open(my $fh,">","/home/infrared/dev/CiscoStudy/public/images/avatar/$newfile");
-				binmode $fh;
-				print $fh $gd->$ext;
-				close $fh;
-		
-				#$file->copy_to("/home/infrared/dev/CiscoStudy/public/images/avatar/$newfile");
+					open(my $fh,">","/home/infrared/dev/CiscoStudy/public/images/avatar/$newfile");
+					binmode $fh;
+					print $fh $gd->$ext;
+					close $fh;
+					
+					my $update = $user->update({
+						avatar_method => 'disk',
+						avatar_value => $newfile,
+					});
+					if ($update->id) {
+						var success => 1;
+					}
+					else {
+						var error => 1;
+					}
+				}
+				else {
+					var size_error => 1;
+					$trap++;
+				}
 			}
 			else {
-				var size_error => 1;
+				var invalid_type => 1;
 				$trap++;
-				
 			}
 		}
 		else {
-			var invalid_type => 1;
-			$trap++;
+			var upload_error => 1;
 		}
 	}
-	if (!$trap) {
-		my $user_id = session 'user_id';
-		my $user = schema->resultset('Users')->find($user_id)->update({
-			avatar_method => 'disk',
-			avatar_value => '<img src="/images/avatar/' . $newfile . '" />',
+	elsif ($method eq 'gravatar') {
+		my $email = $user->email;
+		if (!$email) {
+			var missing_email => 1;
+		}
+		else {
+			my $default;
+			my $size = 40;
+			my $avatar_value = md5_hex(lc $email);
+			#my $avatar_url = "http://www.gravatar.com/avatar/". md5_hex(lc $user->email). "\?d=".uri_escape($default). "\&s=".$size;
+			my $update = $user->update({
+				avatar_method => 'gravatar',
+				avatar_value => $avatar_value,
+			});
+			if ($update->id) {
+				var success => 1;
+			}
+			else {
+				var error => 1;
+			}
+		}
+	}
+	elsif ($method eq 'none') {
+		$user->update({
+			avatar_method => '',
+			avatar_value => '',
 		});
 		if ($user->id) {
 			var success => 1;
 		}
+		else {
+			var error => 1;
+		}
 	}
-	else {
-		var error => 1;
-	}
+	var user => &get_user($user_id);
 	template 'change-picture.tt';
 };
 post '/c/change-email' => sub {
@@ -941,16 +987,34 @@ sub date {
 	
 }
 
-sub user {
-	my ($user_id) = @_;
+sub get_user {
+	my ($user_id) = shift;
 	my $user = schema->resultset('Users')->find($user_id);
 	
+	my $email = $user->email;
+	
+	my $avatar_method = $user->avatar_method;
+	my $avatar_value  = $user->avatar_value;
+	my $avatar;
+	if ($avatar_method eq 'disk') {
+		$avatar = '/images/avatar/'. $avatar_value;
+	}
+	elsif ($avatar_method eq 'gravatar') {
+		my $default;
+		my $size = 40;
+		$avatar = "http://www.gravatar.com/avatar/". $avatar_value. "\?d=".uri_escape($default). "\&s=".$size;
+	}
+	else {
+		$avatar = undef;
+	}
 	my $hash = {
 		username => $user->username,
 		avatar_method => $user->avatar_method,
 		avatar_value   => $user->avatar_value,
+		avatar => $avatar,
 		
 	};
+	
 	return $hash;
 }
 

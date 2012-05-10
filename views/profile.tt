@@ -3,7 +3,7 @@
 <h1>Profile</h1>
 
 
-[% vars.avatar_value %]
+<img src="[% vars.user.avatar %]"/>
 
 <table>
     <tr><td>Username:</td><td>[% session.username %]</td></tr>
