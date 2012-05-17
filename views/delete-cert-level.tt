@@ -1,0 +1,18 @@
+[% INCLUDE header.tt %]
+
+
+
+[% IF vars.success.defined %]
+    <p>Success</p>
+[% END %]
+
+[% IF vars.error.defined %]
+    <p>oops!</p>
+[% END %]
+
+[% IF vars.inuse.defined %]
+    <p>This certification level is use and cannot be deleted</p>
+[% END %]
+
+
+[% INCLUDE footer.tt %]

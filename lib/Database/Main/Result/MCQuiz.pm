@@ -28,8 +28,9 @@ mysql> describe mc_quiz;
 | image        | varchar(250)     | YES  |     | NULL    |                |
 | answer       | varchar(250)     | NO   |     | NULL    |                |
 | category     | varchar(250)     | NO   |     | NULL    |                |
-| cert_level   | varchar(250)     | NO   |     | NULL    |                |
-| contributor  | varchar(250)     | NO   |     | NULL    |                |
+| cert_level   | int(10) unsigned | NO   |     | NULL    |                |
+| contributor  | int(14) unsigned | NO   |     | NULL    |                |
 +--------------+------------------+------+-----+---------+----------------+
-8 rows in set (0.01 sec)
+8 rows in set (0.00 sec)
+
 

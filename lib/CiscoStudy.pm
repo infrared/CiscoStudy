@@ -5,7 +5,7 @@ use Dancer::Plugin::DBIC;
 use List::Util 'shuffle';
 use Dancer ':syntax';
 use Array::Compare;
-use Crypt::PasswdMD5;
+#use Crypt::PasswdMD5;
 use URI::Escape qw(uri_escape);
 use Digest::MD5 qw(md5_hex);
 use Email::Valid;
@@ -20,158 +20,25 @@ hook 'before' => sub {
         request->path_info('/login');
     }
 };
-get '/login' => sub {
-    template 'login.tt';
-};
-post '/login' => sub {
-    my $username = param 'username';
-    my $password = param 'password';
-    
-    my @errors;
-    
-    
-    my $search = schema->resultset('Users')->search({
-     	username => $username
-    });
-	if ($search->count) {
-    	my $row    = $search->first;
-    	my $stored = $row->password;
-		
-		var username => $username;
-		var password => $password;
-		var stored   => $stored;
-		
-		var mine => unix_md5_crypt($password,$stored);
-        if ($stored eq unix_md5_crypt($password,$stored)) {
-			$search->update({ last_login => time });
-            session authenticated => 1;
-            session username      => $row->username;
-            session user_id       => $row->user_id;
-			session role          => $row->role;
-			session timezone	  => $row->timezone;
-			#session avatar_method => $row->avatar_method;
-			#session avatar_value  => $row->avatar_value;
-			
-			# avatar
-=cut			
-			if ($row->avatar_method eq 'disk') {
-				session avatar => '<img src="/images/avatar/' . $row->avatar_value . '" />';
-			}
-			elsif ($row->avatar_method eq 'email') {
-				my $default;
-				my $size = 40;
-				session avatar => "http://www.gravatar.com/avatar/". md5_hex(lc $row->email). "\?d=".uri_escape($default). "\&s=".$size;
-			}
-			else {
-				session avatar => '';
-			}
+
+use CiscoStudy::Routes::Index;
+use CiscoStudy::Routes::Login;
+use CiscoStudy::Routes::Profile;
+use CiscoStudy::Routes::Logout;
+use CiscoStudy::Routes::IRC;
+use CiscoStudy::Routes::CertLevel;
+use CiscoStudy::Routes::Category;
+
 =cut
-			
-			
-			if ($row->role eq 'admin') {
-				session admin	  => 1;
-				session moderator => 1;
-				session contributor => 1;
-			}
-			elsif ($row->role eq 'moderator') {
-				session moderator => 1;
-				session contributor => 1;
-			}
-			elsif($row->role eq 'contributor') {
-				session contributor => 1;
-			}
-			
-            redirect '/';
-        }
-        else {
-            push (@errors, "Invalid username or password");
-                       
-        }
-    }
-	
-    else {
-        push (@errors, "Login Failed");
-        
-    }
-    var errors => \@errors;
-    template 'login.tt';
-
-};
-get '/profile' => sub {
-	my $user_id = session('user_id');
-	
-	var user => &get_user($user_id);
-	template 'profile.tt';
-};
-
-get '/logout' => sub {
-    session->destroy;
-	my $hash = session;
-    redirect '/';
-};
-get '/c/test' => sub {
-	template 'index.tt';
-};
-
-
-get '/' => sub {
-    template 'index.tt';
-};
-
-get '/subnet-calculator' => sub {
-	template 'subnet-calculator';
-};
-post '/subnet-calculator' => sub {
-	template 'subnet-calculator';
-};
-
-get '/irc' => sub {
-	template 'irc.tt';
-};
 get '/subnetting-how-to' => sub {
 	template 'subnetting.tt';
 };
 get '/how-to-calculate-network-address' => sub {
 	template 'calculate-network-address.tt';
 };
+=cut
 
-get '/c/categories' => sub {
-	if (session('moderator')) {
-		var categories => &categories;
-		template 'categories.tt';
-	}
-	else {
-		template 'permission-denied.tt';
-	}
-};
-get '/c/new-category' => sub {
-	if (session('moderator')) {
-		template 'new-category.tt';
-	}
-	else {
-		template 'permission-denied.tt';
-	}
-};
-post '/c/new-category' => sub {
-	if (session('moderator')) {
-		my $category = param 'category';
-		my $search = schema->resultset('Category')->search({ category => $category });
-		if ($search->count) {
-			var cat_exists => 1;
-	
-		}
-		else {
-			my $insert = schema->resultset('Category')->create({ category => $category });
-			if ($insert->id) {
-				var success => 1;
-			}
-		}
-		template 'new-category.tt';
-	}
-	else {
-		template 'permission-denied.tt';
-	}
-};
+
 get '/c/change-timezone' => sub {
 	use DateTime::TimeZone;
 	my @timezones = DateTime::TimeZone->all_names;
@@ -598,10 +465,10 @@ post '/c/new-simple-quiz' => sub {
 	if ( length $cert_level && length $category && length $question && length $answer) {
 
 		my $insert = schema->resultset('SimpleQuiz')->create({
-			cert_level => $cert_level,
-			category   => $category,
-			question   => $question,
-			answer     => $answer,
+			cert_level  => $cert_level,
+			category    => $category,
+			question    => $question,
+			answer      => $answer,
 			contributor => $user_id,
 		});
 		if ($insert->id) {
@@ -635,7 +502,7 @@ post '/c/new-multiple-choice-quiz' => sub {
 		
 		my $type = $file->type;
 		my $size = $file->size;
-		my @allowed = ('image/jpeg');
+		my @allowed = ('image/jpeg','image/png', 'image/gif');
 		if (grep($type eq $_, @allowed)) {
 			
 			if ($size < 524288) {
@@ -643,7 +510,8 @@ post '/c/new-multiple-choice-quiz' => sub {
 				my ($ext) = ($type =~ /^image\/(jpeg|gif|png)/);
 				$newfile = (int rand 999 + 100) .'-'. time . ".$ext";
 		
-				$file->copy_to("/home/infrared/dev/CiscoStudy/public/images/mc_quiz/$newfile");
+				my $appdir = config->{appdir};
+				$file->copy_to("$appdir/public/images/mc_quiz/$newfile");
 			}
 			else {
 				var size_error => 1;
@@ -834,7 +702,7 @@ get '/cisco-quiz-multiple-choice' => sub {
 		
 		
 	}
-	var contributor => user($search->contributor);
+	var contributor => get_user($search->contributor);
         my $options = schema->resultset('MCQuizOption')->search({ parent_id => $id });
         my @ids;
         
@@ -893,7 +761,7 @@ get '/cisco-quiz-multiple-choice/*' => sub {
 		
 		
 	}
-	var contributor => user($search->contributor);
+	var contributor => get_user($search->contributor);
         my $options = schema->resultset('MCQuizOption')->search({ parent_id => $id });
         my @ids;
         

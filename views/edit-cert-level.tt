@@ -1,0 +1,24 @@
+[% INCLUDE header.tt %]
+
+
+
+[% IF vars.success.defined %]
+    <p>Success</p>
+[% ELSE %]
+
+[% IF vars.error.defined %]
+    <p>oops!</p>
+[% ELSE %]
+    <p>(<a href="/c/cert-levels">Cancel</a>)</p><br />
+<form method="POST" action="/c/edit-cert-level/[% vars.cert.cert_id %]">
+
+<input type="text" name="cert_name" value="[% vars.cert.cert_name %]">
+<input type="submit" value="edit">
+</form>
+
+<br /><br />
+<a href="/c/delete-cert-level">delete this cert level</a>
+[% END %]
+[% END %]
+
+[% INCLUDE footer.tt %]

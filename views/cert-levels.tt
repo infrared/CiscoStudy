@@ -1,0 +1,44 @@
+[% INCLUDE header.tt %]
+
+<h1>Certifications</h1>
+
+[% IF vars.success.defined %]
+    <p>Successfully created certification level with id: [% vars.success %]</p>
+[% END %]
+[% IF vars.error.defined %]
+    <p>Error creating certification level</p>
+[% END %]
+<table>
+    <tr><th>ID</th><th>Name</th></tr>
+[% FOR cert IN vars.certs %]
+    
+    <tr><td>[% cert.cert_id %]</td><td><a href="/c/edit-cert-level/[% cert.cert_id %]">[% cert.cert_name %]</a></td></tr>
+    
+[% END %]
+</table>
+<br />
+<a id="showhidetrigger" href="#">New Certifcation Level</a>
+    <div id="showhidetarget"><br />
+        
+        <form method="POST" action="/c/cert-levels">
+                <input type="text" name="cert_name" />
+                <input type="submit" value="Add" />
+        </form>
+        
+    
+    </div>
+    
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#showhidetarget').hide();
+
+            $('a#showhidetrigger').click(function () {
+                $('#showhidetarget').toggle(100);
+            });
+        });
+    </script>
+
+
+
+[% INCLUDE footer.tt %]
