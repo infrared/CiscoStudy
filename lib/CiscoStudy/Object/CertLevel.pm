@@ -79,6 +79,26 @@ sub get_certs {
         
     }
     return \@certs;
+}
+sub get_certs_hashref {
+    
+    my ($self) = @_;
+    my $search = schema->resultset('CertLevel')->search;
+    
+    my $certs;
+    
+    if ($search->count) {
+        
+        while(my $row = $search->next) {
+            my $id = $row->cert_id;
+            $certs->{$id}{cert_name} = $row->cert_name;
+      
+        }
+        
+    }
+    return $certs;
+    
+    
     
 }
 

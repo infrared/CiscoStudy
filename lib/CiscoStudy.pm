@@ -28,6 +28,7 @@ use CiscoStudy::Routes::Logout;
 use CiscoStudy::Routes::IRC;
 use CiscoStudy::Routes::CertLevel;
 use CiscoStudy::Routes::Category;
+use CiscoStudy::Routes::Quiz;
 
 =cut
 get '/subnetting-how-to' => sub {

@@ -2,10 +2,8 @@
 
 <h1>Quiz Management</h1>
 
-
-<b>Simple Quiz Questions</b><br />
 <a href="/c/simple-quiz-show">View Quiz Questions</a><br />
-<a href="/c/new-simple-quiz">Create a new quiz question</a><br />
+<a href="/c/new-quiz">Create a new quiz question</a><br />
 <br /><br />
 
 <b>Multiple Choice Questions</b><br />

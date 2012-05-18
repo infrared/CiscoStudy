@@ -1,0 +1,34 @@
+<table>
+<tr><td>Question:</td><td><textarea cols="40" rows="5" name="question"></textarea></td></tr>
+<tr><td>Answer:</td><td><input type="text" name="answer"> </td></tr>
+<tr><td colspan="2"><input type="checkbox" name="answer_type" value="IOS">This answer is a Cisco IOS command
+
+
+        <a id="showhelptrigger" href="#">explain</a>
+    <div id="showhelptarget"><br />
+        By checking this box, the answer will be passed through a separate algorithm to validate the answer.<br />
+        You can specify which characters of the command are optional. For example, if the answer to your
+        question is the command:<br />
+        <b>configure terminal</b><br />
+        You can specify the answer:<br />
+        <b>conf(igure) t(erminal)</b><br /><br />
+        This means the characters in between the ( ) are optional. The following would match as correct answers:<br />
+        conf t<br />
+        confi te<br />
+        conf term<br />
+        configure t<br />
+        etc ..
+    </div>
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $('#showhelptarget').hide();
+
+            $('#showhelptrigger').click(function () {
+                $('#showhelptarget').toggle(100);
+            });
+        });
+    </script>
+
+
+</td></tr>
+</table>

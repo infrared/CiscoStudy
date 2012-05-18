@@ -73,6 +73,7 @@ post '/c/edit-cert-level/*' => sub {
         
         # no funny business
         if ($cl_obj->update_cert($cert_id,$cert_name)) {
+            redirect '/c/cert-levels';#request->path_info('/c/cert-levels');
             var success => 1;
         }
         else {

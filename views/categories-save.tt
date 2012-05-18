@@ -1,0 +1,59 @@
+[% INCLUDE header.tt %]
+
+<h1>Categories</h1>
+
+
+
+<select id="thechoices">
+
+[% FOREACH cert IN vars.certs %]
+
+
+	<option value="[% cert.cert_id %]">[% cert.cert_name %]</option>
+
+
+[% END %]
+</select>
+
+
+<div id="boxes">
+[% FOREACH cert IN vars.certs %]
+
+
+	<div id="[% cert.cert_id %]">
+        
+        
+        [% FOREACH category IN vars.categories %]
+        [% IF category.cert_level == cert.cert_id %]
+            [% category.category %]<br />
+        [% END %]
+        [% END %]
+        
+        
+        
+        
+        </div>
+[% END %]
+
+</div>
+
+<!-- the jQuery -->
+<script type="text/javascript" src="/javascripts/jquery.js"></script>
+<script type="text/javascript">
+
+$("#thechoices").change(function(){
+	$("#" + this.value).show().siblings().hide();
+});
+
+$("#thechoices").change();
+
+</script>
+
+
+
+
+
+
+
+
+[% INCLUDE footer.tt %]

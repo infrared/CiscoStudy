@@ -1,0 +1,13 @@
+<a id="showhidetrigger" href="#">Include Image</a>
+    <div id="showhidetarget">
+        <input type="file" name="upfile">
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#showhidetarget').hide();
+
+            $('a#showhidetrigger').click(function () {
+                $('#showhidetarget').toggle(100);
+            });
+        });
+    </script>

@@ -1,0 +1,43 @@
+<table>
+<tr><td>Question:</td><td><textarea cols="40" rows="5" name="question"></textarea></td></tr>
+<tr>
+    <td><input type="checkbox" name="id" value="1" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="2" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="3" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="4" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="5" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="6" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="7" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="8" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="9" />
+    <td><input type="text" name="option"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="10" />
+    <td><input type="text" name="option"></td>
+</tr>
+</table>

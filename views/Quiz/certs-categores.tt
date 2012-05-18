@@ -1,0 +1,56 @@
+<table>
+<tr><td>Certification Level</td><td>
+
+<select id="thechoices">
+    
+    <option value="0">--select--</option>
+
+[% FOREACH cert IN vars.certs %]
+
+
+	<option value="[% cert.cert_id %]">[% cert.cert_name %]</option>
+
+
+[% END %]
+</select>
+</td></tr>
+</table>
+
+<div id="boxes">
+    <div id="0"></div>
+[% FOREACH cert IN vars.certs %]
+
+
+	<div id="[% cert.cert_id %]">
+        
+        <table><tr></tr><th>ID</th><th>Name</th></tr>
+        [% FOREACH category IN vars.categories %]
+        [% IF category.cert_level == cert.cert_id %]
+            <tr><td>[% category.cat_id %]</td><td>[% category.category %]</td></tr>
+        [% END %]
+    [% END %]
+        </table>
+        
+        
+   
+    
+        
+        
+        
+<script type="text/javascript">
+
+$("#thechoices").change(function(){
+	$("#" + this.value).show().siblings().hide();
+});
+
+$("#thechoices").change();
+
+</script>
+        
+        
+        
+        
+        </div>
+[% END %]
+
+</div>

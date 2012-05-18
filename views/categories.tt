@@ -2,28 +2,64 @@
 
 <h1>Categories</h1>
 
-<table>
-[% FOREACH cat IN vars.categories %]
-    <tr><td>[% cat.id %]</td><td>[% cat.category %]</td></tr>
-[% END %]
-</table>
-
-<a href="/c/new-category">New Category</a>
-
-
 
 
 <select id="thechoices">
-	<option value="box1">Box 1</option>
-	<option value="box2">Box 2</option>
-	<option value="box3">Box 3</option>
+
+[% FOREACH cert IN vars.certs %]
+
+
+	<option value="[% cert.cert_id %]">[% cert.cert_name %]</option>
+
+
+[% END %]
 </select>
 
-<!-- the DIVs -->
+
 <div id="boxes">
-	<div id="box1"><p>Box 1 stuff...</p></div>
-	<div id="box2"><p>Box 2 stuff...</p></div>
-	<div id="box3"><p>Box 3 stuff...</p></div>
+[% FOREACH cert IN vars.certs %]
+
+
+	<div id="[% cert.cert_id %]">
+        
+        <table><tr></tr><th>ID</th><th>Name</th></tr>
+        [% FOREACH category IN vars.categories %]
+        [% IF category.cert_level == cert.cert_id %]
+            <tr><td>[% category.cat_id %]</td><td>[% category.category %]</td></tr>
+        [% END %]
+    [% END %]
+        </table>
+        
+        
+        <a id="showhidetrigger[% cert.cert_id %]" href="#">New Category</a>
+    <div id="showhidetarget[% cert.cert_id %]"><br />
+        
+        <form method="POST" action="/c/new-category/[% cert.cert_id %]">
+                <input type="text" name="category" />
+                <input type="submit" value="Add" />
+        </form>
+        
+    
+    </div>
+    
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#showhidetarget[% cert.cert_id %]').hide();
+
+            $('#showhidetrigger[% cert.cert_id %]').click(function () {
+                $('#showhidetarget[% cert.cert_id %]').toggle(100);
+            });
+        });
+    </script>
+        
+        
+        
+        
+        
+        </div>
+[% END %]
+
 </div>
 
 <!-- the jQuery -->
