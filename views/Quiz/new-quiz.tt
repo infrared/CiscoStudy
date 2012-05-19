@@ -3,7 +3,7 @@
 <h1>New Quiz Entry</h1>
 
 [% IF vars.success.defined %]
-    <b>Added Successfully with id: [% vars.id %]</b>
+    <b>Successfully created quiz with id: [% vars.success %]</b>
 [% END %]
 [% IF vars.formerror.defined %]
     <b>Error with the form</b>
@@ -18,8 +18,9 @@
 
 
 [% INCLUDE "Quiz/certs-categories.tt" %]
+<br />
 [% INCLUDE "Quiz/include-image.tt" %]
-
+<br />
 <br />
 Question Type:
 <select name="quiztype" id="thetypechoices">

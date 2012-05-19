@@ -1,7 +1,7 @@
 <table>
-<tr><td>Question:</td><td><textarea cols="40" rows="5" name="question"></textarea></td></tr>
-<tr><td>Answer:</td><td><input type="text" name="answer"> </td></tr>
-<tr><td colspan="2"><input type="checkbox" name="answer_type" value="IOS">This answer is a Cisco IOS command
+<tr><td>Question:</td><td><textarea cols="40" rows="5" name="baquestion"></textarea></td></tr>
+<tr><td>Answer:</td><td><input type="text" name="baanswer"> </td></tr>
+<tr><td colspan="2"><input type="checkbox" name="baanswer_type" value="1">This answer is a Cisco IOS command
 
 
         <a id="showhelptrigger" href="#">explain</a>

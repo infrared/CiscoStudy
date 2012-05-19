@@ -1,5 +1,5 @@
 <table>
-<tr><td>Question:</td><td><textarea cols="40" rows="5" name="question"></textarea></td></tr>
+<tr><td>Question:</td><td><textarea cols="40" rows="5" name="mcquestion"></textarea></td></tr>
 <tr>
     <td><input type="checkbox" name="id" value="1" />
     <td><input type="text" name="option"></td>

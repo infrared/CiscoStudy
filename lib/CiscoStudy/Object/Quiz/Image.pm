@@ -26,11 +26,15 @@ sub upload_image {
             my $newfile;
             
             my ($ext) = ($type =~ /^image\/(jpeg|gif|png)/);
-			$newfile = (int rand 999 + 100) .'-'. time . ".$ext";
+            
+            my $random = (int rand 999) + 100;
+            my $appdir = config->{appdir};
+            mkdir "$appdir/public/images/quiz/$random";
+			$newfile = $random .'-'. time . ".$ext";
 		
-			my $appdir = config->{appdir};
-			$file->copy_to("$appdir/public/images/quiz/$newfile");
-            return $newfile if (-e "$appdir/public/images/quiz/$newfile");
+
+			$file->copy_to("$appdir/public/images/quiz/$random/$newfile");
+            return $newfile if (-e "$appdir/public/images/quiz/$random/$newfile");
             
             return 0;
 		}

@@ -5,18 +5,15 @@
 
 
 
-<table>
-<tr><td>Select your certification level</td>
-	<td><select id="thechoices" name="cert_id">
+<b>Select your certification level</b>
+	<select id="thechoices" name="cert_id">
     
 			<option value="0">--select--</option>
 
 			[% FOREACH cert IN vars.certs %]
 				<option value="[% cert.cert_id %]">[% cert.cert_name %]</option>
 			[% END %]
-		</select></td></tr>
-
-<tr><td valign="top">Category(ies)</td><td>
+		</select><br />
 
 <div id="boxes">
     <div id="0"></div>
@@ -24,7 +21,7 @@
 
 
 	<div id="[% cert.cert_id %]">
-        
+        <b>Choose categories</b><br />
         [% FOREACH category IN vars.categories %]
         [% IF category.cert_level == cert.cert_id %]
             <input type="checkbox" name="category" value="[% category.cat_id %]" />[% category.category %]<br />
@@ -42,7 +39,7 @@
 	</div>
 [% END %]
 
-</div></td></tr></table>
+</div>
 
 
 

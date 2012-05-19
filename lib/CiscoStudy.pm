@@ -814,10 +814,7 @@ post '/cisco-quiz-multiple-choice' => sub {
 };
 
 
-get '/quiz-menu' => sub {
-	template 'quiz-menu.tt';
-	
-};
+
 sub categories {
 	my $cat = schema->resultset('Category')->search;
 	my @categories;
