@@ -3,7 +3,7 @@
 <h1>Cisco Quiz</h1>
 
 
-
+<form method="POST" action="/cisco-quiz-menu">
 
 <b>Select your certification level</b>
 	<select id="thechoices" name="cert_id">
@@ -35,11 +35,24 @@
 	});
 	$("#thechoices").change();
 	</script>
+    <b>Select your quiz type</b><br />
+        <input type="checkbox" name="quiztype" value="MC" />Multiple Choice<br />
+        <input type="checkbox" name="quiztype" value="BA" />Basic<br />
+        <input type="checkbox" name="quiztype" value="TF" />True/False<br />
+        <input type="checkbox" name="quiztype" value="FC" />Flashcards<br />
         
+
+    </select>
+    <br />
+    <input type="Submit" value="Go!" />
 	</div>
+    
+
+        
 [% END %]
 
 </div>
+</form>
 
 
 

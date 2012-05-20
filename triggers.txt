@@ -1,0 +1,10 @@
+triggers:
+
+mysql> delimiter |
+mysql> create trigger contributor_update AFTER INSERT on quiz
+    -> for each row
+    -> begin
+    -> update user set quiz_contributions = quiz_contributions+1 where user_id = new.contributor;
+    -> end;
+    -> |
+Query OK, 0 rows affected (0.00 sec)

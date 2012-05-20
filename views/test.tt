@@ -1,0 +1,9 @@
+[% vars.cert_id %]
+
+[% FOREACH listx IN vars.listx %]
+
+[% listx %]<br />
+
+[% END %]
+
+

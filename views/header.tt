@@ -13,7 +13,7 @@
 
 [% IF session.authenticated.defined %]
 <div id="TopRight">
-    Welcome <a href="/profile">[% session.username %]</a> ([% session.role %])
+    Welcome <a href="/c/profile">[% session.username %]</a> ([% session.role %])
 </div>
 [% END %]
 <div id="Header"><a href="http://ciscostudy.org" >Cisco Study</a></div>

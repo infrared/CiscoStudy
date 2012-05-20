@@ -51,6 +51,8 @@
 
 [% END %]
 [% END %]
+[% USE Dumper %]
 
+[% Dumper.dump(session.list) %]
 
 [% INCLUDE footer.tt %]

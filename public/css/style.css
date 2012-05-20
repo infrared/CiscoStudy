@@ -3,7 +3,8 @@
 body {
 	margin:0px;
 	padding:0px;
-	font-family:verdana, arial, helvetica, sans-serif;
+	font:12px/20px verdana, arial, helvetica, sans-serif;
+	/* font-family:verdana, arial, helvetica, sans-serif;*/
 	color:#333;
 	background-color:white;
 	}
@@ -16,13 +17,18 @@ h1 {
 	color:#ccc;
 	}
 p {
-	font:11px/20px verdana, arial, helvetica, sans-serif;
+	font:12px/20px verdana, arial, helvetica, sans-serif;
 	margin:0px 0px 16px 0px;
 	padding:0px;
 	}
 #Content>p {margin:0px;}
 /* #Content>p+p {text-indent:30px;} */
 
+td {
+	font:12px/20px verdana, arial, helvetica, sans-serif;
+	margin:0px 0px 16px 0px;
+	padding:0px;
+	}
 a {
 	color:#09c;
 	font-size:11px;

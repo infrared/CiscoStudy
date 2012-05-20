@@ -29,12 +29,12 @@ sub upload_image {
             
             my $random = (int rand 999) + 100;
             my $appdir = config->{appdir};
-            mkdir "$appdir/public/images/quiz/$random";
+            #mkdir "$appdir/public/images/quiz/$random";
 			$newfile = $random .'-'. time . ".$ext";
 		
 
-			$file->copy_to("$appdir/public/images/quiz/$random/$newfile");
-            return $newfile if (-e "$appdir/public/images/quiz/$random/$newfile");
+			$file->copy_to("$appdir/public/images/quiz/$newfile");
+            return $newfile if (-e "$appdir/public/images/quiz/$newfile");
             
             return 0;
 		}

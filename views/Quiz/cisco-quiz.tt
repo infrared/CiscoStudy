@@ -1,0 +1,71 @@
+[% INCLUDE header.tt %]
+
+<h1>Quiz</h1>
+
+
+[% IF vars.done.defined %]
+    <p><b>No more questions left!</b></p>
+    <p>Your session has been cleared and you can start over</p>
+[% ELSE %]
+
+
+    [% IF params.submit.defined %]
+
+    [% IF session.correct.defined %]
+        <p><b>Correct!</b></p><br /><br />
+        <a href="/cisco-quiz">Next --></a>
+    [% END %]
+    [% IF session.wrong.defined %]
+        <p><b>Nope :(</b><br /><br /></p>
+        <a href="/cisco-quiz/[% vars.id %]">Try again</a> or
+        <a href="/cisco-quiz">Try a different one</a>
+    [% END %]
+
+
+
+
+[% ELSE %]
+
+
+
+[% IF vars.image.defined %]
+<img src="/images/quiz/[% vars.image %]" />
+[% END %]
+
+<p>[% vars.question %]</p>
+<form method="post" action="/cisco-quiz">
+
+[% IF vars.quiz_type == 'MC' %]
+    <p>(Choose [% vars.choose %])</p>
+    
+    <input type="hidden" name="id" value="[% vars.id %]">
+    <table border="0">
+    [% FOREACH option in vars.options %]
+
+    <tr><td><input type="checkbox" name="option" value="[% option.id %]" />[% option.option %]</td></tr>
+    [% END %]
+    </table>
+
+[% ELSIF vars.quiz_type == 'TF' %]
+
+[% vars.guess %]
+    
+    <input type="radio" name="tfradio" value="true">True<br>
+    <input type="radio" name="tfradio" value="false">False<br>
+
+[% END %]
+
+    <input type="submit" name="submit" value="Submit">
+    </form>
+<br />
+[% IF session.authenticated.defined %]
+<p>Quiz question contributed by: [% vars.contributor.username %] /  [% vars.date_created %]</p>
+[% END %]
+
+[% END %]
+[% END %]
+[% USE Dumper %]
+
+[% Dumper.dump(session.list) %]
+
+[% INCLUDE footer.tt %]

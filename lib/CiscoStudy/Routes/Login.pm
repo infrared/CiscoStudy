@@ -16,7 +16,7 @@ post '/login' => sub {
     my @errors;
     
     
-    my $search = schema->resultset('Users')->search({
+    my $search = schema->resultset('User')->search({
      	username => $username
     });
 	if ($search->count) {

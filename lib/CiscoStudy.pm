@@ -2,15 +2,14 @@ package CiscoStudy;
 
 use Database::Main;
 use Dancer::Plugin::DBIC;
-use List::Util 'shuffle';
+
 use Dancer ':syntax';
 use Array::Compare;
 #use Crypt::PasswdMD5;
-use URI::Escape qw(uri_escape);
-use Digest::MD5 qw(md5_hex);
-use Email::Valid;
-use DateTime;
-use Image::Resize;
+
+
+
+
 #use DateTime::TimeZone
 
 our $VERSION = '0.1';
@@ -40,186 +39,10 @@ get '/how-to-calculate-network-address' => sub {
 =cut
 
 
-get '/c/change-timezone' => sub {
-	use DateTime::TimeZone;
-	my @timezones = DateTime::TimeZone->all_names;
-	var timezones => \@timezones;
-	
-	template 'change-timezone.tt';
-};
-post '/c/change-timezone' => sub {
-	my $user_id = session 'user_id';
-	my $timezone = param 'timezone';
-	my $user = schema->resultset('Users')->find($user_id)->update({ timezone => $timezone });
-	if ($user) {
-		var success => 1;
-		session timezone => $timezone;
-	}
-	else {
-		var error => 1;
-	}
-		my @timezones = DateTime::TimeZone->all_names;
-	var timezones => \@timezones;
-	template 'change-timezone.tt';
-};
-get '/c/change-email' => sub {
-	template 'change-email.tt';
-};
 
-get '/c/change-picture' => sub {
-	my $user_id = session 'user_id';
-	var user => &get_user($user_id);
-	
-	template 'change-picture.tt';
-};
-post '/c/change-picture' => sub {
-	
-	my $method = param 'picture';
-	my $user_id = session 'user_id';
-	my $user = schema->resultset('Users')->find($user_id);
-	
-	
-	if ($method eq 'disk') {
-		my $trap;
-		my $newfile;
-		if(  my $file  = request->upload('upfile') ) {
-		
-			my $type = $file->type;
-			my $size = $file->size;
-		
-		
-			my @allowed = ('image/jpeg');
-			if (grep($type eq $_, @allowed)) {
-								
-				if ($size < 524288) {
-				
-					my $temp = $file->tempname;
-				    
-					my $image = Image::Resize->new($temp);
-					my $gd = $image->resize(40, 40);
-				
-					my ($ext) = ($type =~ /^image\/(jpeg|gif|png)/);
-					$newfile = (int rand 999 + 100) .'-'. time . ".$ext";
-				
-					open(my $fh,">","/home/infrared/dev/CiscoStudy/public/images/avatar/$newfile");
-					binmode $fh;
-					print $fh $gd->$ext;
-					close $fh;
-					
-					my $update = $user->update({
-						avatar_method => 'disk',
-						avatar_value => $newfile,
-					});
-					if ($update->id) {
-						var success => 1;
-					}
-					else {
-						var error => 1;
-					}
-				}
-				else {
-					var size_error => 1;
-					$trap++;
-				}
-			}
-			else {
-				var invalid_type => 1;
-				$trap++;
-			}
-		}
-		else {
-			var upload_error => 1;
-		}
-	}
-	elsif ($method eq 'gravatar') {
-		my $email = $user->email;
-		if (!$email) {
-			var missing_email => 1;
-		}
-		else {
-			my $default;
-			my $size = 40;
-			my $avatar_value = md5_hex(lc $email);
-			#my $avatar_url = "http://www.gravatar.com/avatar/". md5_hex(lc $user->email). "\?d=".uri_escape($default). "\&s=".$size;
-			my $update = $user->update({
-				avatar_method => 'gravatar',
-				avatar_value => $avatar_value,
-			});
-			if ($update->id) {
-				var success => 1;
-			}
-			else {
-				var error => 1;
-			}
-		}
-	}
-	elsif ($method eq 'none') {
-		$user->update({
-			avatar_method => '',
-			avatar_value => '',
-		});
-		if ($user->id) {
-			var success => 1;
-		}
-		else {
-			var error => 1;
-		}
-	}
-	var user => &get_user($user_id);
-	template 'change-picture.tt';
-};
-post '/c/change-email' => sub {
-	my $email = param 'email';
-	my $user_id = session 'user_id';
-	
-	if (Email::Valid->address($email)) {
-	
-		my $user = schema->resultset('Users')->find($user_id)->update({ email => $email });
-		if ($user) {
-				var success => 1;
-		}
-		else {
-			var error => 1;
-		}
-	}
-	else {
-	
-		var invalid => 1;
-	}
-	
-	
-	template 'change-email.tt';
-};
-get '/c/change-password' => sub {
-	template 'change-password.tt';
-};
-post '/c/change-password' => sub {
-	my $password1 = param 'password1';
-	my $password2 = param 'password2';
-	my $user_id = session 'user_id';
-	
-	if (length $password1 > 4) {
-		if ($password1 eq $password2) {
-			my $hash = unix_md5_crypt($password1);
-			my $user = schema->resultset('Users')->find($user_id)->update({ password => $hash });
-			if ($user) {
-				var success => 1;
-			}
-			else {
-				var error => 1;
-			}
-		}
-		else {
-			var mismatch => 1;
-		}
-			
-		
-	}
-	else {
-		var invalid => 1;
-	}
-	template 'change-password.tt';
-};
+
+
+
 
 get '/c/users' => sub {
 	if (session('admin')) {
@@ -834,55 +657,9 @@ sub avatar {
 	return $user->avatar_value;
 	
 }
-sub date {
-	
-	my ($epoch) = shift;
-	if (length session('timezone')) {
-		
-		my $dt = DateTime->from_epoch( epoch => $epoch )->set_time_zone( session('timezone') );
-		
-							   
-		return sprintf("%3s %02d, %04d - %02d:%02d:%02d", $dt->month_abbr,$dt->day, $dt->year,$dt->hour,$dt->min,$dt->sec);
 
-						   
-	}
-	else {
-		return 0;
-	}
-	
-	
-}
 
-sub get_user {
-	my ($user_id) = shift;
-	my $user = schema->resultset('Users')->find($user_id);
-	
-	my $email = $user->email;
-	
-	my $avatar_method = $user->avatar_method;
-	my $avatar_value  = $user->avatar_value;
-	my $avatar;
-	if ($avatar_method eq 'disk') {
-		$avatar = '/images/avatar/'. $avatar_value;
-	}
-	elsif ($avatar_method eq 'gravatar') {
-		my $default;
-		my $size = 40;
-		$avatar = "http://www.gravatar.com/avatar/". $avatar_value. "\?d=".uri_escape($default). "\&s=".$size;
-	}
-	else {
-		$avatar = undef;
-	}
-	my $hash = {
-		username => $user->username,
-		avatar_method => $user->avatar_method,
-		avatar_value   => $user->avatar_value,
-		avatar => $avatar,
-		
-	};
-	
-	return $hash;
-}
+
 
 
 true;

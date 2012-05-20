@@ -4,22 +4,30 @@ use strict;
 use warnings;
 use Dancer::Plugin::DBIC;
 use Dancer ':syntax';
+use DateTime;
+use List::Util 'shuffle';
+use Array::Unique;
 
 use CiscoStudy::Object::Category;
 use CiscoStudy::Object::CertLevel;
+use CiscoStudy::Object::Quiz;
 use CiscoStudy::Object::Quiz::Image;
 use CiscoStudy::Object::Quiz::MCQuiz;
+use CiscoStudy::Object::User;
+my $u_obj  = CiscoStudy::Object::User->new;
 my $c_obj  = CiscoStudy::Object::Category->new;
 my $cl_obj = CiscoStudy::Object::CertLevel->new;
 my $im_obj = CiscoStudy::Object::Quiz::Image->new;
+my $q_obj  = CiscoStudy::Object::Quiz->new;
 #my $mc_obj = CiscoStudy::Object::Quiz::MCQuiz->new;
 
 
 
-get '/cisco-quiz' => sub {
+get '/cisco-quiz-menu' => sub {
     
     var certs       => $cl_obj->get_certs;
 	var categories  => $c_obj->get_categories;
+    #var contributors => $q_obj->get_contributors;
     template 'Quiz/quiz-menu.tt';
 };
 
@@ -288,6 +296,245 @@ post '/c/new-quiz' => sub {
 	
 };
 
+post '/cisco-quiz-menu' => sub {
+    
+    my $cert_id  = param 'cert_id';
+    my $category = param 'category';
+    my $quiz_type = param 'quiztype';
+    
+    
+    my @categories;
+    if (ref $category ne 'ARRAY') {
+        push (@categories,$category);
+    }
+    else {
+        @categories = @$category;
+    }
+    
+    
+    my @quiz_types;
+    if (ref $quiz_type ne 'ARRAY') {
+        push(@quiz_types,$quiz_type);
+    }
+    else {
+        @quiz_types = @$quiz_type;
+    }
+    
+    my @query;
+    
+    foreach (@quiz_types) {
+        my $hash = {
+            quiz_type => $_,
+        };
+        push (@query,$hash);
+        
+    }
+    
+    
+    session quiz_cert_id => $cert_id;
+    session quiz_category => \@categories;
+    session quiz_type => \@quiz_types;
+    session start => time;
+    
+    
+    my $all = schema->resultset('Quiz')->search({
+        -and => [
+            -or => \@query,
+            cert_level => $cert_id,
+        ],
+  
+    });
+    
+	if ($all->count) {
+        tie my @list, 'Array::Unique';
+		while (my $row = $all->next) {
 
+
+            my (@cats) = ($row->category =~ /(\d+)/g);
+            
+            for my $cat (@categories) {
+                if (grep($cat == $_, @cats)) {
+                    push(@list,$row->quiz_id);
+
+                }
+            }
+
+		}
+		session list => \@list;
+
+	}
+   
+    redirect '/cisco-quiz';
+	
+};
+
+
+get '/cisco-quiz' => sub {
+    
+    if (!session('start') || !session('quiz_cert_id') || !session('quiz_category') || !session('quiz_type')) {
+        redirect '/cisco-quiz-menu';
+    }
+	else {
+	
+        my $list = session('list');
+	
+        if (@{$list} > 0) {
+	
+            my $random = int rand (scalar @{ $list });
+	
+            my $id = @$list[$random];
+            splice(@$list, $random,1);
+	
+            session list => $list;
+            session current_quiz => $id;
+	
+	
+            my $search = schema->resultset('Quiz')->find($id);
+            if ($search) {
+                
+                
+                if ($search->quiz_type eq 'MC') {
+                    session correct => undef;
+                    session wrong => undef;
+    
+                    var quiz_type => 'MC';
+                    var question => $search->question;
+                    session q_answer => $search->answer;    # To be used to check answer
+                    session q_type   => $search->quiz_type; # To be used to check answer
+
+                    
+	
+                    my (@answers) = ($search->answer =~ /(\d+)/g);
+	
+                    my $map = {
+                        1 => 'one',
+                        2 => 'two',
+                        3 => 'three',
+                        4 => 'four',
+                        5 => 'five',
+                        6 => 'six',
+                        7 => 'seven',
+                        8 => 'eight',
+                        9 => 'nine',
+                        10 => 'ten',
+                    };
+                    my $size = scalar @answers;
+	
+                    var choose => $map->{$size};
+	
+
+                    my $options = schema->resultset('MCQuizOption')->search({ parent_id => $id });
+                    my @ids;
+        
+                    while(my $row = $options->next) {
+                        my $hash;
+                        $hash->{id} = $row->mco_id;
+                        $hash->{option} = $row->mc_option;
+                        push(@ids,$hash);
+                    }   
+                    my @shuffled = shuffle(@ids);
+                    var id => $id;
+                    var options => \@shuffled;
+                }
+                elsif ($search->quiz_type eq 'TF') {
+                    session correct => undef;
+                    session wrong => undef;
+                    session q_answer => $search->answer;    # To be used to check answer
+                    session q_type   => $search->quiz_type; # To be used to check answer
+                    var quiz_type => 'TF';
+                    var question => $search->question;
+                    
+                }
+                var image    => $search->image;
+                my $date = $search->date_created;
+                if (my $created = date($date)) {
+                    var date_created => $created;
+                }
+                var contributor => $u_obj->get_user($search->contributor);
+        	}   
+        }
+        else {
+            var done => 1;
+            session list => undef;
+            session start => undef;
+        }
+    }
+
+	template 'Quiz/cisco-quiz.tt';
+	
+};
+
+post '/cisco-quiz' => sub {
+    if (session('current_quiz')) {
+        
+        my $quiz_id    = session('current_quiz');
+        my $quiz_type  = session('q_type');
+        my $answer     = session('q_answer');
+        
+        if ($quiz_type eq 'MC') {
+            
+            my $guess = param 'option';
+          	my @guesses;
+            if (ref $guess eq 'ARRAY') {
+                @guesses = @{ $guess };
+	    	}
+            else {
+                push(@guesses,$guess);
+            }
+            my (@answers) = ($answer =~ /(\d+)/g);
+	
+            my $compare = Array::Compare->new;
+	
+            if ($compare->perm( \@guesses, \@answers)) {
+                session correct => 1;
+		
+            }
+            else {
+                session wrong => 1;
+                
+            }
+        }
+        elsif ($quiz_type eq 'TF') {
+            
+            my $guess = param 'tfradio';
+            if ($guess eq $answer) {
+                session correct => 1;
+            }
+            else {
+                session wrong => 1;
+                
+            }
+            
+        }
+    }
+	template 'Quiz/cisco-quiz.tt';
+};        
+        
+        
+
+
+
+
+
+
+
+sub date {
+	
+	my ($epoch) = shift;
+	if (length session('timezone')) {
+		
+		my $dt = DateTime->from_epoch( epoch => $epoch )->set_time_zone( session('timezone') );
+		
+							   
+		return sprintf("%3s %02d, %04d - %02d:%02d:%02d", $dt->month_abbr,$dt->day, $dt->year,$dt->hour,$dt->min,$dt->sec);
+
+						   
+	}
+	else {
+		return 0;
+	}
+	
+	
+}
 
 1;

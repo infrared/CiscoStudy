@@ -10,7 +10,7 @@
     <tr><td>User ID:</td><td>[% session.user_id   %]</td></tr>
     <tr><td>Role:</td><td>[% session.role %]</td></tr>
     <tr><td>TimeZone:</td><td>[% session.timezone %] (<a href="/c/change-timezone">edit</a>)</td></tr>
-    
+    <tr><td>Quiz Contributions:</td><td>[% vars.user.quiz_contributions %]</td></tr> 
 </table>
 <p><a href="/c/change-password">change password</a></p>
 <p><a href="/c/change-email">change email</a></p>
