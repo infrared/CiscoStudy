@@ -4,8 +4,8 @@
 
 
 [% IF vars.done.defined %]
-    <p><b>No more questions left!</b></p>
-    <p>Your session has been cleared and you can start over</p>
+    <p><b>No more questions left!</b></p><br /><br />
+    <a href="/cisco-quiz-menu">Start again!</a>
 [% ELSE %]
 
 
@@ -32,7 +32,7 @@
 <img src="/images/quiz/[% vars.image %]" />
 [% END %]
 
-<p>[% vars.question %]</p>
+<p>[% vars.question.replace('\n','<br />') %]</p>
 <form method="post" action="/cisco-quiz">
 
 [% IF vars.quiz_type == 'MC' %]
@@ -45,18 +45,52 @@
     <tr><td><input type="checkbox" name="option" value="[% option.id %]" />[% option.option %]</td></tr>
     [% END %]
     </table>
+        <input type="submit" name="submit" value="Submit">
+    </form>
 
 [% ELSIF vars.quiz_type == 'TF' %]
 
-[% vars.guess %]
+
     
     <input type="radio" name="tfradio" value="true">True<br>
     <input type="radio" name="tfradio" value="false">False<br>
+        <input type="submit" name="submit" value="Submit">
+    </form>
 
+    
+[% ELSIF vars.quiz_type == 'FC' %]
+
+    
+    <a id="showhidetrigger" href="#">Show Answer</a>
+    <div id="showhidetarget"><br />
+        
+
+    <b>[% vars.answer %]</b>
+        
+    
+    </div>
+    
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#showhidetarget').hide();
+
+            $('#showhidetrigger').click(function () {
+                $('#showhidetarget').toggle(100);
+            });
+        });
+    </script>
+    
+    <br /><br />
+    <a href="/cisco-quiz">Next --></a>
+    
+    
+    
 [% END %]
 
-    <input type="submit" name="submit" value="Submit">
-    </form>
+
+
+
 <br />
 [% IF session.authenticated.defined %]
 <p>Quiz question contributed by: [% vars.contributor.username %] /  [% vars.date_created %]</p>
@@ -64,8 +98,6 @@
 
 [% END %]
 [% END %]
-[% USE Dumper %]
 
-[% Dumper.dump(session.list) %]
 
 [% INCLUDE footer.tt %]

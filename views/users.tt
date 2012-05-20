@@ -6,16 +6,35 @@
 <table>
 [% FOREACH user IN vars.users %]
     
+    
+    <table class="profile" width="100%">
     <tr>
-        <td>[% user.user_id %]</td>
-        <td>[% user.username %]</td>
-        <td>[% users.email %]</td>
-        <td>[% user.date_joined %]</td>
-        <td>[% user.last_login %]</td>
-        <td>[% user.timezone %]</td>
-        <td>[% user.role %]</td>
         
+        <td width="100" valign="top" align="center">
+        
+        [% IF user.avatar.defined %]    
+        <img src="[% user.avatar %]"/><br />
+        [% END %]
+        <b>[% user.username %]</b>
+            
+            
+            
+        </td><td>
+        <table cellpadding="0">
+            
+        <tr><td>user id</td><td>[% user.user_id %]</td></tr>
+        <tr><td>email</td><td>[% user.email %]</td></tr>
+        <tr><td>date joined</td><td>[% user.date_joined %]</td></tr>
+        <tr><td>last login</td><td>[% user.last_login %]</td></tr>
+        <tr><td>timezone</td><td>[% user.timezone %]</td></tr>
+        <tr><td>role</td><td>[% user.role %]</td></tr>
+        <tr><td>quiz contributions</td><td>[% user.quiz_contributions %]</td></tr>
+        
+        </table>
+        </td>
     </tr>
+    </table>
+    <div style="height: 2px;"></div>
 
 [% END %]
 

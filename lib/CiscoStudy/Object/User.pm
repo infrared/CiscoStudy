@@ -38,6 +38,7 @@ sub get_user {
 		$avatar = undef;
 	}
 	my $hash = {
+        user_id => $user_id,
 		username => $username,
         email => $user->email,
 		avatar_method => $avatar_method,

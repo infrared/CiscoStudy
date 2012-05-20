@@ -92,6 +92,12 @@ body>#Header {height:14px;}
 	width:150px;
 	}
 /* Again, "be nice to Opera 5". */
+
+
+table.profile {
+		background-color:#eee;
+	border:1px solid #999;
+}
 body>#Menu {width:150px;}
 
 
