@@ -18,7 +18,7 @@
 	<a href="/c/cisco-quiz-menu">Quiz Questions</a><br />
 	[% IF session.moderator.defined %]<a href="/c/categories">Categories</a><br />[% END %]
 	[% IF session.contributor.defined %]<a href="/c/cert-levels">Certifications</a><br />[% END %]
-	[% IF session.role == 'admin' %]<a href="/c/user">Users</a><br />[% END %]
+	[% IF session.role == 'moderator' %]<a href="/c/users">Users</a><br />[% END %]
 	[% END %]
 	
 		

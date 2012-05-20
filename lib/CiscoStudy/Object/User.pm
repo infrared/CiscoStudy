@@ -37,6 +37,8 @@ sub get_user {
 	else {
 		$avatar = undef;
 	}
+    
+    
 	my $hash = {
         user_id => $user_id,
 		username => $username,
@@ -44,8 +46,8 @@ sub get_user {
 		avatar_method => $avatar_method,
 		avatar_value   => $avatar_value,
 		avatar => $avatar,
-        date_joined => $user->date_joined,
-        last_login => $user->last_login,
+        date_joined => date($user->date_joined),
+        last_login => date($user->last_login),
         timezone => $user->timezone,
         quiz_contributions => $user->quiz_contributions,
         forum_posts => $user->forum_posts,
@@ -77,6 +79,24 @@ sub update_avatar {
     return 1 if $user->id;
     return 0;
     
+}
+sub date {
+	
+	my ($epoch) = shift;
+	if (length session('timezone')) {
+		
+		my $dt = DateTime->from_epoch( epoch => $epoch )->set_time_zone( session('timezone') );
+		
+							   
+		return sprintf("%3s %02d, %04d - %02d:%02d:%02d", $dt->month_abbr,$dt->day, $dt->year,$dt->hour,$dt->min,$dt->sec);
+
+						   
+	}
+	else {
+		return 0;
+	}
+	
+	
 }
 
 

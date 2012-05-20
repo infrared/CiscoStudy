@@ -12,8 +12,8 @@ my $u_obj = CiscoStudy::Object::User->new;
 
 
 
-get '/c/user' => sub {
-	if (session('admin')) {
+get '/c/users' => sub {
+	if (session('moderator')) {
 				
 		my $search = schema->resultset('User')->search;
 		
@@ -33,6 +33,9 @@ get '/c/user' => sub {
 		template 'permission-denied';
 	}
 };
+
+
+
 
 
 1;
