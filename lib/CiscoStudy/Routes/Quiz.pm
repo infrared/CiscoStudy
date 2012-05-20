@@ -31,8 +31,31 @@ get '/cisco-quiz-menu' => sub {
     template 'Quiz/quiz-menu.tt';
 };
 
+get '/c/cisco-quiz-menu' => sub {
+    if (session('contributor')) {
+        template 'simple-quiz-menu.tt';
+    }
+    else {
+        template 'permission-denied.tt';
+    }
+    
+    
+};
+get '/c/view-cisco-quiz' => sub {
+    template 'under-development.tt';
+    
+};
+get '/c/new-quiz' => sub {
+	if (session('contributor')) {
+        var certs => $cl_obj->get_certs;
+		var categories  => $c_obj->get_categories;
 
-
+		template 'Quiz/new-quiz.tt';
+	}
+	else {
+		template 'permission-denied.tt';
+	}
+};
 get '/c/edit-quiz/*' => sub {
     
 	if (session('moderator')) {
