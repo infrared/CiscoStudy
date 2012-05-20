@@ -38,6 +38,26 @@ sub get_user {
 		$avatar = undef;
 	}
     
+    my $date_joined = $user->date_joined;
+    my $last_login  => $user->last_login;
+    
+    my $now = time;
+    
+    
+    if (defined($date_joined)) {
+        $date_joined = &date($date_joined);
+    }
+    else {
+        $date_joined = 0; 
+    }
+    if (defined($last_login)) {
+        $last_login = &date($last_login);
+    }
+    else {
+        $last_login = 0;
+    }
+    
+
     
 	my $hash = {
         user_id => $user_id,
@@ -46,8 +66,8 @@ sub get_user {
 		avatar_method => $avatar_method,
 		avatar_value   => $avatar_value,
 		avatar => $avatar,
-        date_joined => date($user->date_joined),
-        last_login => date($user->last_login),
+        date_joined => $date_joined,
+        last_login => $last_login,
         timezone => $user->timezone,
         quiz_contributions => $user->quiz_contributions,
         forum_posts => $user->forum_posts,

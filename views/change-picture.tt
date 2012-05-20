@@ -29,7 +29,7 @@
 <table>
     
     <tr><td><input type="radio" name="picture" value="disk" [% IF vars.user.avatar_method == 'disk' %] checked="checked"[% END %]><td>Use my own <input type="file" name="upfile"/></td></tr>
-    <tr><td colspan="2"><p>(image will be resized to 40x40)</p></td></tr>
+    <tr><td colspan="2"><p>(image will be resized to 85x85)</p></td></tr>
 
 </table>
 
