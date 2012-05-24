@@ -5,7 +5,7 @@
 			<option value="0">--select--</option>
 
 			[% FOREACH cert IN vars.certs %]
-				<option value="[% cert.cert_id %]">[% cert.cert_name %]</option>
+				<option value="[% cert.cert_id %]" [% IF vars.cert_level == cert.cert_id %] SELECTED[% END %]>[% cert.cert_name %]</option>
 			[% END %]
 		</select></td></tr>
 
@@ -20,7 +20,15 @@
         
         [% FOREACH category IN vars.categories %]
         [% IF category.cert_level == cert.cert_id %]
-            <input type="checkbox" name="category" value="[% category.cat_id %]" />[% category.category %]<br />
+            <input type="checkbox" name="category" value="[% category.cat_id %]"
+				   
+				   [% FOREACH cat IN vars.category %]
+				   [% IF cat == category.cat_id %]
+				   CHECKED
+				   [% END %]
+				   [% END %]
+				
+				   />[% category.category %]<br />
         [% END %]
     [% END %]
  

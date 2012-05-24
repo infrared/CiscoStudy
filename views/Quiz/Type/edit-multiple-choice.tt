@@ -1,0 +1,23 @@
+<table>
+<tr><td>Question:</td><td><textarea cols="40" rows="5" name="mcquestion">[% vars.question %]</textarea></td></tr>
+
+
+[% FOREACH option IN vars.options %]
+	
+	
+
+<tr>
+    <td><input type="checkbox" name="id" value="[% option.id %]"
+			   
+		[% FOREACH answer IN vars.answers %]
+				[% IF answer == option.id %]
+			   CHECKED
+			   [% END %]
+		[% END %]
+			   
+			   />
+    <td><input type="text" name="option" value="[% option.option %]"></td>
+</tr>
+
+[% END %]
+</table>

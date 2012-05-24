@@ -56,22 +56,65 @@ get '/c/new-quiz' => sub {
 		template 'permission-denied.tt';
 	}
 };
+
 get '/c/edit-quiz/*' => sub {
     
-	if (session('moderator')) {
+
+    if (session('moderator')) {
         my ($quiz_id) = splat;
-        session quiz_edit => $quiz_id;
         var certs       => $cl_obj->get_certs;
 		var categories  => $c_obj->get_categories;
+	
+        my $search = schema->resultset('Quiz')->find($quiz_id);
+        if ($search) {
+            
+            var cert_level => $search->cert_level;
+            my (@categories) = ($search->category =~ /(\d+)/g);
+            var category => \@categories;
+            
+            if ($search->quiz_type eq 'MC') {
+            
+                var quiz_type => 'MC';
+                var question => $search->question;
+                var answer   => $search->answer;
+               
+                my (@answers) = ($search->answer =~ /(\d+)/g);
+
+                var answers => \@answers;
+	
+                my $options = schema->resultset('MCQuizOption')->search({ parent_id => $quiz_id });
+                my @ids;
         
-        my $quiz = schema->resultset('Quiz')->find($quiz_id);
-        
-		
-		template 'Quiz/new-quiz.tt';
-	}
-	else {
-		template 'permission-denied.tt';
-	}
+                while(my $row = $options->next) {
+                    my $hash;
+                    $hash->{id} = $row->mco_id;
+                    $hash->{option} = $row->mc_option;
+                    push(@ids,$hash);
+                }   
+                var options => \@ids;
+            }
+            elsif ($search->quiz_type eq 'TF') {
+                var quiz_type => 'TF';
+                var question => $search->question;
+                var answer => $search->answer;
+                    
+            }
+            elsif ($search->quiz_type eq 'FC') {
+                var question => $search->question;
+                var answer   => $search->answer;
+                var quiz_type => 'FC';
+            }
+            var image    => $search->image;
+
+        }
+        else {
+            unknown  => 1;
+
+        }
+    }
+
+	template 'Quiz/edit-quiz.tt';
+	
 };
 post '/c/edit-quiz' => sub {
 
@@ -810,6 +853,8 @@ get '/cisco-quiz/*' => sub {
 
     my $search = schema->resultset('Quiz')->find($id);
     if ($search) {
+        
+        session 'current_quiz' => $id;
                 
                 
         if ($search->quiz_type eq 'MC') {

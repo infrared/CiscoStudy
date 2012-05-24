@@ -28,11 +28,47 @@
 
 
 
-[% IF vars.image.defined %]
+[% IF vars.image.length %]
 <img src="/images/quiz/[% vars.image %]" />
 [% END %]
 
-<p>[% vars.question.replace('\n','<br />') %]</p>
+
+
+
+
+[% object =  vars.question %]
+[% object = object.replace('<','&lt;')  %]
+[% object = object.replace('>','&gt;')  %]
+[% object = object.replace('=code=','<code>') %]
+[% object = object.replace('=/code=','</code>') %]
+[% object = object.replace('=b=','<b>')  %]
+[% object = object.replace('=/b=','</b>')  %]
+
+[% FOREACH line IN object.split('\n') %]
+
+
+   [% IF line.match('<code>') %]
+   [% code = 'yes' %]
+        <ol>
+   [% END %]
+   [% IF line.match('</code>') %]
+   [% code = 'no' %]
+        </ol>
+   [% END %]
+
+   [% IF code == 'yes' && ! line.match('<code>') %]
+        [% IF ! line.length %][% line = '&nbsp;' %][% END %]
+        <li><code>[% line.replace(' ','&nbsp;') %]</code></li>
+   [% ELSE %]
+     [% line %]<br />
+   [% END %]
+[% END %]
+
+
+
+
+
+
 <form method="post" action="/cisco-quiz">
 
 [% IF vars.quiz_type == 'MC' %]

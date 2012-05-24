@@ -1,0 +1,90 @@
+[% INCLUDE header.tt %]
+
+<h1>Edit Quiz</h1>
+
+[% IF vars.unknown.defined %]
+    <p>unknown quiz id</p>
+[% END %]
+
+[% IF vars.success.defined %]
+    <b>Successfully created quiz with id: [% vars.success %]</b>
+[% END %]
+[% IF vars.formerror.defined %]
+    <b>Error with the form</b>
+[% END %]
+
+[% IF vars.error.defined %]
+    <b>omg error</b>
+[% END %]
+
+<form method="POST" enctype="multipart/form-data" action="/c/new-quiz">
+
+
+
+[% INCLUDE "Quiz/certs-categories.tt" %]
+<br />
+[% INCLUDE "Quiz/edit-include-image.tt" %]
+<br />
+<br />
+Question Type:
+<select name="quiztype" id="thetypechoices">
+    <option value="undef">--select--</option>
+    <option value="MC" [% IF vars.quiz_type == 'MC' %] SELECTED[% END %]>Multiple Choice</option>
+    <option value="TF" [% IF vars.quiz_type == 'TF' %] SELECTED[% END %]>True/False</option>
+    <option value="FC" [% IF vars.quiz_type == 'FC' %] SELECTED[% END %]>Flashcard</option>
+    <option value="BA" [% IF vars.quiz_type == 'BA' %] SELECTED[% END %]>Basic</option>
+</select>
+<div id="types">
+    
+    <div id="undef">
+        
+    </div>
+    
+    
+    <div id="MC">
+        [% INCLUDE "Quiz/Type/edit-multiple-choice.tt" %]
+    </div>
+    <div id="TF">
+
+         [% INCLUDE "Quiz/Type/true-false.tt" %]
+    </div>
+    <div id="FC">
+        [% INCLUDE "Quiz/Type/flashcard.tt" %]
+    </div>
+    
+    <div id="BA">
+        [% INCLUDE "Quiz/Type/basic.tt" %]
+    </div>
+
+    
+</div>
+
+                <script type="text/javascript">
+
+	$("#thetypechoices").change(function(){
+		$("#" + this.value).show().siblings().hide();
+	});
+	$("#thetypechoices").change();
+	</script>
+
+    
+    
+    
+<br /><br />
+<p>Reason for edit (optional)</p>
+<textarea cols="40" name="update_reason"></textarea>
+<table>
+
+
+
+
+
+
+<tr><td colspan="2"><input type="submit" value="Update"></td></tr>
+
+
+</table>
+</form>
+
+
+[% INCLUDE footer.tt %]

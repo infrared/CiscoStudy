@@ -93,6 +93,24 @@ body>#Header {height:14px;}
 	}
 /* Again, "be nice to Opera 5". */
 
+ol {
+        #background:#036 url(/images/gutter.gif) 2.3em 0 repeat-y;
+        background: #999999;
+        border: 1px solid #000000;
+        overflow:auto;
+        font-family: Terminal, monospace;
+        margin:0;
+        padding:1em 0 1em 2.8em;
+        color:#fff;
+        width:90%;
+}
+ol li {
+        background:#ffc
+        font-size:small;
+		font-family: Terminal, monospace;
+}
+ol code {color:#036;}
+
 
 table.profile {
 		background-color:#eee;
