@@ -62,6 +62,7 @@ get '/c/edit-quiz/*' => sub {
 
     if (session('moderator')) {
         my ($quiz_id) = splat;
+        session quiz_id => $quiz_id;
         var certs       => $cl_obj->get_certs;
 		var categories  => $c_obj->get_categories;
 	
@@ -104,6 +105,12 @@ get '/c/edit-quiz/*' => sub {
                 var answer   => $search->answer;
                 var quiz_type => 'FC';
             }
+            elsif ($search->quiz_type eq 'BA') {
+                var question => $search->question;
+                var answer   => $search->answer;
+                var answer_ios => $search->answer_ios;
+                var quiz_type => 'BA';
+            }
             var image    => $search->image;
 
         }
@@ -119,6 +126,9 @@ get '/c/edit-quiz/*' => sub {
 post '/c/edit-quiz' => sub {
 
     if (session('moderator')) {
+        
+        
+        my $quiz_id = session 'quiz_id';
         
         my $stop;
         my $cert_id  = param 'cert_id';
@@ -141,13 +151,15 @@ post '/c/edit-quiz' => sub {
             if (@{$categories}) {
             
                 my $image;
-                if(  my $file  = request->upload('upfile') ) {
+                if (!param 'delimage') {
+                    if(  my $file  = request->upload('upfile') ) {
 		
-                    if ($image = $im_obj->upload_image($file)) {
-                        var image => 1;
-                    }
-                    else {
-                        $stop++;
+                        if ($image = $im_obj->upload_image($file)) {
+                            var image => 1;
+                        }
+                        else {
+                            $stop++;
+                        }
                     }
                 }
                 if (!$stop) {
@@ -220,10 +232,10 @@ post '/c/edit-quiz' => sub {
                                 		contributor => $user_id,
                             		};
 	
-                                    my $insert = schema->resultset('Quiz')->create($data);
-                                    if ($insert->id) {
+                                    my $find = schema->resultset('Quiz')->find($quiz_id);
+                                    if ($find->id) {
                                         my @answers_update;
-                                        my $parent_id = $insert->id;
+                                        my $parent_id = $find->id;
                                         var id => $parent_id;
                                         my $x = 1;
                                         foreach my $option (@{ $options }) {
@@ -237,7 +249,7 @@ post '/c/edit-quiz' => sub {
                                             $x++;
                                         }
                                         my $answer_update = join(',', @answers_update);
-                                        $insert->update({ answer => $answer_update });
+                                        $find->update({ answer => $answer_update });
                                     }
                                 }
                                 else {
@@ -475,7 +487,7 @@ post '/c/new-quiz' => sub {
                                     if ($insert->id) {
                                         my @answers_update;
                                         my $parent_id = $insert->id;
-                                        var id => $parent_id;
+                                        var success => $parent_id;
                                         my $x = 1;
                                         foreach my $option (@{ $options }) {
                                             my $insert_o = schema->resultset('MCQuizOption')->create({

@@ -1,0 +1,10 @@
+create table forum_topic (topic_id int primary key auto_increment, forum_id int unsigned not null, date_created int(14) unsigned not null,  topic_title varchar(250) not null, threads int unsigned not null);
+
+
+create table forum (forum_id int primary key auto_increment, date_created int(14) unsigned not null, forum_title varchar(250) not null);
+
+
+ create table forum_thread (thread_id int auto_increment primary key, topic_id int unsigned not null, thread_posts int unsigned default 0, thread_views int unsigned default 0, date_created int(15) unsigned not null, user_id int unsigned not null);
+
+
+create table forum_post (post_id int auto_increment primary key, thread_id int unsigned not null, date_created int(14) unsigned not null, post blob not null, user_id int unsigned not null);

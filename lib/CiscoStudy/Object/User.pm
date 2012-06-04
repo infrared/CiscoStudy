@@ -25,6 +25,7 @@ sub get_user {
 	$first = lc $first;
 	my $avatar_method = $user->avatar_method;
 	my $avatar_value  = $user->avatar_value;
+    #print "OMG VALUE: $avatar_value\n";
 	my $avatar;
 	if ($avatar_method eq 'disk') {
 		$avatar = "/images/avatar/$first/". $avatar_value;
@@ -32,7 +33,7 @@ sub get_user {
 	elsif ($avatar_method eq 'gravatar') {
 		my $default;
 		my $size = 85;
-		$avatar = "http://www.gravatar.com/avatar/". $avatar_value. "\?d=".uri_escape($default). "\&s=".$size;
+		$avatar = "http://www.gravatar.com/avatar/". $avatar_value;# "\?d=".uri_escape($default). "\&s=".$size;
 	}
 	else {
 		$avatar = undef;

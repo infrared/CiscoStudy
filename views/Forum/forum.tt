@@ -1,0 +1,20 @@
+[% INCLUDE header.tt %]
+
+
+
+<a href="/forums"><h2>Forums</h2></a>
+[% FOREACH forum IN vars.forums %]
+    
+<table>
+
+<tr><td>[% forum.forum_title %]</td><td width="65" align="center">Threads</td><td width="65" align="center">Posts</td><td>Last Post</td></tr>
+
+[% FOREACH topic IN forum.topics %]
+
+    <tr><td><a href="/forums/topic/[% topic.topic_id %]/[% topic.topic_title.replace(' ','-') %]">[% topic.topic_title %]</a></td><td align="center">[% topic.threads %]</td><td align="center">[% topic.posts %]</td><td></td></tr>
+[% END %]
+
+[% END %]
+</table>
+
+[% INCLUDE footer.tt %]

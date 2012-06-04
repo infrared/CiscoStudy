@@ -1,0 +1,10 @@
+[% INCLUDE header.tt %]
+
+<form method="post" action="/c/forums/reply/[% session.thread_reply %]">
+
+<textarea name="post" cols="20" rows="6"></textarea>
+
+<input type="submit" value="Reply">
+</form>
+
+[% INCLUDE footer.tt %]

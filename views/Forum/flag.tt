@@ -1,0 +1,56 @@
+[% INCLUDE header.tt %]
+
+
+<p>To flag this post for review by a moderator, choose a reason and click submit</p>
+<form method="POST" action="/c/forums/flag/[% session.flag_post_id %]">
+    <table>
+    <tr><td>Reason</td><td>
+    <select name="reason">
+        <option value="spam">Spam</option>
+        <option value="duplicate">Duplicate</option>
+        <option value="inappropriate">Inappropriate</option>
+    </select></td></tr>
+    
+    <tr><td>Comment (optional)</td><td><textarea name="comment" cols="20" rows="2"></textarea></td></tr>
+    
+    <tr><td colspan="2"><input type="submit" value="Submit"></td></tr></table>
+    
+</form>
+
+<br /><br />
+
+
+    <table class="odd" width="100%">
+    <tr>
+        
+        <td width="100" valign="top" align="left" style="border-right: 2px solid #FFFFFF; padding-left: 5px;">
+        
+        [% IF vars.post.user.avatar.defined %]    
+        <img src="[% post.user.avatar %]"/><br />
+        [% END %]
+        <b>[% vars.post.user.username %]</b><br />
+        role: [% vars.post.user.role %]<br />
+        posts: [% vars.post.user.forum_posts %]
+        
+            
+            
+            
+        </td><td valign="top">
+        
+        <table>
+            <tr><td valign="top" style="border-bottom: 1px solid #FFFFFF";>[% vars.post.date %]</td></tr>
+            <tr><td valign="top">[% vars.post.post %]</td></tr>
+        
+        </table>
+        
+        
+        </td>
+    </tr>
+    </table>    <div style="height: 4px;"></div>
+
+
+
+
+[% INCLUDE footer.tt %]
+
+

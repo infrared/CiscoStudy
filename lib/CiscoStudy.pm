@@ -29,38 +29,7 @@ use CiscoStudy::Routes::CertLevel;
 use CiscoStudy::Routes::Category;
 use CiscoStudy::Routes::Quiz;
 use CiscoStudy::Routes::User;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+use CiscoStudy::Routes::Forum;
 
 
 

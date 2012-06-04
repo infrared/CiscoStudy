@@ -1,0 +1,63 @@
+[% INCLUDE header.tt %]
+
+
+
+[% FOREACH post IN vars.posts %]
+    
+    <table class="[% loop.parity %]" width="100%">
+    <tr>
+        
+        <td width="100" valign="top" align="left" style="border-right: 2px solid #FFFFFF; padding-left: 5px;">
+        
+        [% IF post.user.avatar.defined %]    
+        <img src="[% post.user.avatar %]"/><br />
+        [% END %]
+        <b>[% post.user.username %]</b><br />
+        role: [% post.user.role %]<br />
+        posts: [% post.user.forum_posts %]
+        
+            
+            
+            
+        </td><td valign="top">
+        
+        <table>
+            <tr><td valign="top" style="border-bottom: 1px solid #FFFFFF";>[% post.date %]<span style="padding-left:100px;">
+            <a href="/c/forums/flag/[% post.post_id %]" title="flag this post for review"><img border="0" src="/images/red-flag.gif" alt="flag"></a></span></td></tr>
+            <tr><td valign="top">[% post.post %]</td></tr>
+        
+        </table>
+        
+        
+        </td>
+    </tr>
+    </table>    <div style="height: 4px;"></div>
+
+[% END %]
+        <a id="showhidetrigger" href="#showhidetarget">Reply</a>
+    <div id="showhidetarget"><br />
+        
+        <form method="post" action="/c/forums/reply/[% session.current_thread %]">
+        <textarea name="post" cols="40" rows="6"></textarea><br />
+                <input type="submit" value="Reply" />
+        </form>
+        
+    
+    </div>
+
+    
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#showhidetarget').hide();
+
+            $('#showhidetrigger').click(function () {
+                $('#showhidetarget').toggle(100);
+            });
+        });
+    </script>
+
+
+[% INCLUDE footer.tt %]
+
+

@@ -46,10 +46,10 @@ a:hover {background-color:#eee;}
 	/* For IE5/Win's benefit height = [correct height] + [top padding] + [top and bottom border widths] */
 	height:33px; /* 14px + 17px + 2px = 33px */
 	border-style:solid;
-	border-color:black;
+	border-color:#66727B;
 	border-width:1px 0px; /* top and bottom borders: 1px; left and right borders: 0px */
 	line-height:11px;
-	background-color:#eee;
+	background-color:#E6EAEF;
 
 /* Here is the ugly brilliant hack that protects IE5/Win from its own stupidity. 
 Thanks to Tantek Celik for the hack and to Eric Costello for publicizing it. 
@@ -83,8 +83,8 @@ body>#Header {height:14px;}
 	left:20px;
 	width:172px;
 	padding:10px;
-	background-color:#eee;
-	border:1px solid #999;
+	background-color:#E6EAEF;
+	border:1px solid #66727B;
 	line-height:17px;
 /* Again, the ugly brilliant hack. */
 	voice-family: "\"}\"";
@@ -113,8 +113,16 @@ ol code {color:#036;}
 
 
 table.profile {
-		background-color:#eee;
-	border:1px solid #999;
+		background-color:#E6EAEF;
+	border:1px solid #66727B9;
+}
+table.odd {
+		background-color:#E1EBF2;
+	border:1px solid #E1EBF2;
+}
+table.even {
+		background-color:#ECF3F7;
+	border:1px solid #ECF3F7;
 }
 body>#Menu {width:150px;}
 

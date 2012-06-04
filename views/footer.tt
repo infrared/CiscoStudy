@@ -3,6 +3,7 @@
 <div id="Menu">
 	<a href="/irc">IRC</a><br />
 	<a href="/cisco-quiz-menu">Quiz</a><br />
+	<a href="/forums">Forums</a><br />
 	<!-- <a href="/definitions">Definitions</a> -->
 	
 	<br />

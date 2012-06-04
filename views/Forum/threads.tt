@@ -1,0 +1,21 @@
+[% INCLUDE header.tt %]
+
+
+
+<a href="/forums">Forums</a>/<a href="/forums/[% vars.topic.forum.forum_id %]">[% vars.topic.forum.forum_title %]</a>
+<table class="profile" width="100%">
+<tr><td>Thread</td><td width="65" align="center">Replies</td><td width="65" align="center">Views</td><td>Last Post</td></td>
+[% FOREACH thread IN vars.threads %]
+    
+
+
+<tr><td><a href="/forums/thread/[% thread.thread_id %]/[% thread.thread_title.replace(' ','-') %]">[% thread.thread_title %]</a><br /> by [% thread.user.username %] - [% thread.date_created %]</td>
+    <td align="center">[% thread.thread_posts %]</td><td align="center">[% thread.thread_views %]</td><td>-</td></tr>
+
+
+[% END %]
+</table>
+
+[% INCLUDE footer.tt %]
+
+
