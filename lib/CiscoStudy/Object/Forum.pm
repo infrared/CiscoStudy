@@ -48,11 +48,20 @@ sub get_topics {
     my @topics;
     if ($search->count) {
         while(my $row = $search->next) {
+            my $last_post_user = undef;
+            my $last_post_date = undef;
+            if ((defined $row->last_post_user_id) && (defined $row->last_post_date)) {
+                $last_post_user = $u_obj->get_user($row->last_post_user_id);
+                $last_post_date = $t_obj->date($row->last_post_date);
+            }
             my $hash = {
                 topic_id => $row->topic_id,
                 topic_title => $row->topic_title,
+                topic_desc => $row->topic_desc,
                 threads => $row->threads,
                 posts => $row->posts,
+                last_post_user => $last_post_user,
+                last_post_date => $last_post_date,
             };
             push (@topics,$hash);
         }
@@ -91,13 +100,23 @@ sub get_forum {
 
 sub get_threads {
     my ($self,$topic_id) = @_;
-    my $search = schema->resultset('ForumThread')->search({ topic_id => $topic_id});
+    my $search = schema->resultset('ForumThread')->search(
+        { topic_id => $topic_id},
+        { order_by => { -desc => 'thread_created'}}
+    );
     my @threads;
     if ($search->count) {
         while (my $row = $search->next) {
             my $id = $row->user_id;
             my $user = $u_obj->get_user($id);
             my $date = $t_obj->date($row->thread_created);
+            
+            my $last_post_user = undef;
+            my $last_post_date = undef;
+            if ((defined $row->last_post_user_id) && (defined $row->last_post_date)) {
+                $last_post_user = $u_obj->get_user($row->last_post_user_id);
+                $last_post_date = $t_obj->date($row->last_post_date);
+            }
             my $hash = {
                 thread_id => $row->thread_id,
                 thread_title => $row->thread_title,
@@ -106,17 +125,24 @@ sub get_threads {
                 date_created => $date,
                 user_id => $id,
                 user =>  $user,
+                last_post_user => $last_post_user,
+                last_post_date => $last_post_date,
+                
                 
             };
             push(@threads,$hash);
         }
+        return \@threads;
     }
-    return \@threads;
+    return 0;
+    
 }
 
 sub get_posts {
     my ($self,$thread_id) = @_;
-    my $search = schema->resultset('ForumPost')->search({ thread_id => $thread_id });
+    my $search = schema->resultset('ForumPost')->search({thread_id => $thread_id });
+        
+        
     my @posts;
     if ($search->count) {
         while(my $row = $search->next) {
@@ -138,24 +164,53 @@ sub get_posts {
     
 }
 
+
+
 sub get_post {
     my ($self,$post_id) = @_;
     my $post = schema->resultset('ForumPost')->find($post_id);
     
-    my $user_id = $post->user_id;
-    my $user = $u_obj->get_user($user_id);
-    my $date = $t_obj->date($post->post_created);
-    my $hash = {
-        post_id => $post->post_id,
-        thread_id => $post->thread_id,
-        date => $date,
-        post => $post->post,
-        user => $user,
-        user_id => $user_id,
-    };
-    return $hash;
+    if ($post) {
+    
+        my $user_id = $post->user_id;
+        my $user = $u_obj->get_user($user_id);
+        my $date = $t_obj->date($post->post_created);
+        my $hash = {
+            post_id => $post->post_id,
+            thread_id => $post->thread_id,
+            date => $date,
+            post => $post->post,
+            user => $user,
+            user_id => $user_id,
+        };
+        return $hash;
+    }
+    else {
+        return 0;
+    }
     
     
+}
+sub get_flag {
+    my ($self,$flag_id) = @_;
+    my $flag = schema->resultset('ForumFlag')->find($flag_id);
+    
+    if ($flag) {
+        my $flag_id = $flag->flag_id;
+        my $date = $t_obj->date($flag->flag_date);
+        my $user = $u_obj->get_user($flag->user_id);
+        my $post = $self->get_post($flag->post_id);
+    
+        my $hash = {
+            flag_id => $flag_id,
+            date =>$date,
+            user => $user,
+            reason => $flag->reason,
+            post => $post,
+        };
+        return $hash;
+    }
+    return 0;
 }
 
 1;

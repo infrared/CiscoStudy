@@ -22,9 +22,13 @@
         </td><td valign="top">
         
         <table>
-            <tr><td valign="top" style="border-bottom: 1px solid #FFFFFF";>[% post.date %]<span style="padding-left:100px;">
-            <a href="/c/forums/flag/[% post.post_id %]" title="flag this post for review"><img border="0" src="/images/red-flag.gif" alt="flag"></a></span></td></tr>
-            <tr><td valign="top">[% post.post %]</td></tr>
+            <tr><td valign="top" style="border-bottom: 1px solid #FFFFFF";>[% post.date %]<span style="padding-left:300px;">
+           <a href="/c/forums/flag/[% post.post_id %]" title="flag this post for review"><img border="0" src="/images/red-flag.gif" alt="flag"></a></span></td></tr>
+            [% newpost = post.post %]
+            [% newpost = newpost.replace('\n','<br />') %]
+            [% newpost = newpost.replace('<','&lt;') %]
+            [% newpost = newpost.replace('>','&gt;') %]            
+            <tr><td valign="top">[% newpost %]</td></tr>
         
         </table>
         

@@ -111,6 +111,24 @@ ol li {
 }
 ol code {color:#036;}
 
+table.forum {
+	width: 100%;
+	background-color:#FFFFFF;
+	border:0px;
+	padding:0px;
+	spacing:5px;
+	
+}
+td.forumheader {
+	color:#ffffff;
+	background-color:#6a777f;
+	padding: 5px;
+}
+td.forumtopic {
+	background-color:  #e5eaee;
+	color:#5580a0;
+	padding: 5px;
+}
 
 table.profile {
 		background-color:#E6EAEF;

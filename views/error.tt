@@ -1,1 +1,5 @@
+[% INCLUDE header.tt %]
+<h1>Error</h1>
 [% vars.error %]
+
+[% INCLUDE footer.tt %]

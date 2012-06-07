@@ -1,16 +1,20 @@
 [% INCLUDE header.tt %]
 
 
-
+<a href="/c/forums/new-thread">New Thread</a><br />
 <a href="/forums">Forums</a>/<a href="/forums/[% vars.topic.forum.forum_id %]">[% vars.topic.forum.forum_title %]</a>
-<table class="profile" width="100%">
-<tr><td>Thread</td><td width="65" align="center">Replies</td><td width="65" align="center">Views</td><td>Last Post</td></td>
+<table class="forum" width="100%">
+<tr><td class="forumheader">Active Threads</td><td class="forumheader" width="65" align="center">Replies</td><td class="forumheader" width="65" align="center">Views</td><td class="forumheader">Last Post</td></tr>
 [% FOREACH thread IN vars.threads %]
     
 
 
-<tr><td><a href="/forums/thread/[% thread.thread_id %]/[% thread.thread_title.replace(' ','-') %]">[% thread.thread_title %]</a><br /> by [% thread.user.username %] - [% thread.date_created %]</td>
-    <td align="center">[% thread.thread_posts %]</td><td align="center">[% thread.thread_views %]</td><td>-</td></tr>
+<tr><td class="forumtopic"><a href="/forums/thread/[% thread.thread_id %]/[% thread.thread_title.replace(' ','-') %]">[% thread.thread_title %]</a><br /> by [% thread.user.username %] - [% thread.date_created %]</td>
+    <td class="forumtopic" align="center">[% thread.thread_posts - 1 %]</td><td class="forumtopic" align="center">[% thread.thread_views %]</td>
+    <td class="forumtopic">[% IF thread.last_post_date.defined %]
+        by [% thread.last_post_user.username %]<br />[% thread.last_post_date %]
+        [% END %]
+    </td></tr>
 
 
 [% END %]

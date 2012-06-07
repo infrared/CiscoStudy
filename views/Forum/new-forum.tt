@@ -1,0 +1,9 @@
+[% INCLUDE header.tt %]
+
+<form method="post" action="/c/forums/new-forum">
+
+Forum name: <input type="text" name="newforum"><br />
+<input type="submit" value="Add Forum">
+</form>
+
+[% INCLUDE footer.tt %]

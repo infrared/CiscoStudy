@@ -1,0 +1,33 @@
+[% INCLUDE header.tt %]
+
+<h2>New Forum Topic</h2>
+
+[% IF vars.success.defined %]
+    <b><p>Successfully created new topic</p></b><br /><br />
+    <a href="/forums">forums</a>
+[% ELSE %]
+    
+    [% IF vars.error.defined %]
+        [% vars.error %]
+    [% END %]
+    
+<form method="post" action="/c/forums/new-topic">
+
+<table>
+<tr><td>Topic name</td><td><input type="text" name="newtopic"></td></tr>
+<tr><td>Topic Description</td><td><textarea name="newtopicdesc"></textarea></td></tr>
+<tr><td>Forum</td><td>
+<select name="forum">
+    
+    [% FOREACH forum IN vars.forums %]
+    <option value="[% forum.forum_id %]">[% forum.forum_title %]</option>
+    [% END %]
+</select>
+</td></tr>
+<tr><td colspan="2"></td><td><input type="submit" value="Add Topic"></td></tr>
+</table>
+</form>
+
+[% END %]
+
+[% INCLUDE footer.tt %]

@@ -17,6 +17,7 @@ create trigger thread_new AFTER INSERT on forum_thread
 for each row
 begin
 update forum_topic set threads = threads+1 where topic_id=new.topic_id;
+insert into forum_post (thread_id,post_created,post,user_id) values (new.thread.id,new.thread_created.new)
 end;
 |
 delimiter ;
@@ -28,7 +29,7 @@ delimiter |
 create trigger post_new AFTER INSERT on forum_post
 for each row
 begin
-update forum_thread set thread_posts=thread_posts+1 where thread_id=new.thread_id;
+update forum_thread set thread_posts=thread_posts+1,last_post_date=new.post_created,last_post_user_id=new.user_id where thread_id=new.thread_id;
 update user set forum_posts=forum_posts+1 where user_id=new.user_id;
 end;
 |
@@ -38,10 +39,12 @@ delimiter |
 create trigger post_new_update_topic AFTER update on forum_thread
 for each row
 begin
-update forum_topic set posts=posts+new.thread_posts where forum_topic.topic_id=new.topic_id;
+update forum_topic set posts=posts+1,last_post_date=new.last_post_date,last_post_user_id=new.last_post_user_id where forum_topic.topic_id=new.topic_id;
 end;
 |
 delimiter ;
+
+
 
 
 

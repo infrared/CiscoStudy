@@ -1,0 +1,11 @@
+[% INCLUDE header.tt %]
+
+<form method="post" action="/c/forums/new-thread">
+
+<table><tr><td>Title</td><td><input type="text" name="title"></td></tr>
+<tr><td colspan="2"><textarea name="post" cols="40" rows="10"></textarea></td></tr>
+<tr><td colspan="2"><input type="submit" value="Create Thread">
+</table>
+</form>
+
+[% INCLUDE footer.tt %]

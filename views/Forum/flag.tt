@@ -1,6 +1,9 @@
 [% INCLUDE header.tt %]
 
 
+[% IF vars.success.defined %]
+    <p>This flag has been submitted for review.</p>
+[% ELSE %]
 <p>To flag this post for review by a moderator, choose a reason and click submit</p>
 <form method="POST" action="/c/forums/flag/[% session.flag_post_id %]">
     <table>
@@ -16,6 +19,8 @@
     <tr><td colspan="2"><input type="submit" value="Submit"></td></tr></table>
     
 </form>
+
+[% END %]
 
 <br /><br />
 
