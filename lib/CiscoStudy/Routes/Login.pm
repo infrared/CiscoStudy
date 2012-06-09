@@ -58,14 +58,20 @@ post '/login' => sub {
 				session admin	  => 1;
 				session moderator => 1;
 				session contributor => 1;
+                session member => 1;
 			}
 			elsif ($row->role eq 'moderator') {
 				session moderator => 1;
 				session contributor => 1;
+                session member => 1;
 			}
 			elsif($row->role eq 'contributor') {
 				session contributor => 1;
+                session member => 1;
 			}
+            elsif($row->role eq 'member') {
+                session member => 1;
+            }
 			
             redirect '/';
         }

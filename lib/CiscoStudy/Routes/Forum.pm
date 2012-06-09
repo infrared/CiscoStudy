@@ -6,6 +6,7 @@ use Dancer ':syntax';
 
 use CiscoStudy::Object::Forum;
 use Dancer::Plugin::DBIC;
+use HTML::StripTags qw(strip_tags);
 
 
 my $f_obj = CiscoStudy::Object::Forum->new;
@@ -31,14 +32,20 @@ get '/forums/topic/*/*' => sub {
     
     my ($topic,undef) = splat;
     
+    my $page = 1;
+    
     if ($topic =~ /\d+/) {
         
         session current_topic => $topic;
         
-        if (my $threads = $f_obj->get_threads($topic)) {
+        if (my $threads = $f_obj->get_threads($topic,$page)) {
+            use POSIX;
+            my $count = $f_obj->count_threads($topic);
+            var pages => ceil ($count/10);
             
             var threads => $threads;
             var topic => $f_obj->get_topic($topic);
+            var page => $page;
             template 'Forum/threads.tt';
         }
         else {
@@ -54,14 +61,64 @@ get '/forums/topic/*/*' => sub {
 
 };
 
-get '/forums/thread/*/*' => sub {
-    my ($thread,undef) = splat;
-    if ($thread =~ /\d+/) {
-        var posts => $f_obj->get_posts($thread);
-        session current_thread => $thread;
-        var thread_id => $thread;
+
+# with a page number
+get '/forums/topic/*/*/*' => sub {
+    
+    my ($topic,undef,$page) = splat;
+    
+    if ($topic =~ /\d+/) {
+        
+        session current_topic => $topic;
+        
+        if (my $threads = $f_obj->get_threads($topic,$page)) {
+            
+            use POSIX;
+            
+            my $count = $f_obj->count_threads($topic);
+            var pages => ceil ($count/10);
+            var threads => $threads;
+            var topic => $f_obj->get_topic($topic);
+            var page => $page;
+            template 'Forum/threads.tt';
+            
+        }
+        else {
+            var error => "no such topic";
+            template 'error.tt';
+        }
+    
     }
-    template 'Forum/posts.tt';
+    else {
+        var error => "no such topic";
+        template 'error.tt';
+    }
+
+};
+
+get '/forums/thread/*/*' => sub {
+    my ($thread_id,undef) = splat;
+    if ($thread_id =~ /\d+/) {
+        if (my $thread = $f_obj->get_thread($thread_id)) {
+            my $topic_id = $thread->{'topic_id'};
+            var topic => $f_obj->get_topic($topic_id);
+            var thread => $thread;
+            var posts => $f_obj->get_posts($thread_id);
+            session current_thread => $thread_id;
+            var thread_id => $thread_id;
+            template 'Forum/posts.tt';
+        }
+        else {
+            var error => "Thread does not exist";
+            template 'error.tt';
+        }
+    }
+    else {
+        var error => "Invalid thread id";
+        template 'error.tt';
+    }
+    
+    
 };
 
 get '/c/forums/reply/*' => sub {
@@ -76,6 +133,7 @@ post '/c/forums/reply/*' => sub {
     if ($thread_id == session('current_thread')) {
         
         my $post = param 'post';
+        $post = strip_tags($post);
         
         my $date = time;
         my $user_id = session 'user_id';
@@ -143,6 +201,7 @@ post '/c/forums/flag/*' => sub {
             
             my $reason = param 'reason';
             my $comment = param 'comment';
+            $comment = strip_tags($comment);
             my $user_id = session('user_id');
             my $date = time;
             my $create = schema->resultset('ForumFlag')->create({
@@ -185,7 +244,9 @@ get '/c/forums/new-topic' => sub {
 post '/c/forums/new-topic' => sub {
     if (session('admin')) {
         my $topic = param 'newtopic';
+        $topic = strip_tags($topic);
         my $desc = param 'newtopicdesc';
+        $desc = strip_tags($desc);
         my $forum_id = param 'forum';
     
         my $search = schema->resultset('ForumTopic')->search({ topic_title => $topic });
@@ -225,15 +286,32 @@ post '/c/forums/new-thread' => sub {
         
         my $topic_id = session('current_topic');
         my $title = param 'title';
+        $title = strip_tags($title);
         my $post = param 'post';
+        $post = strip_tags($post);
         my $date = time;
         my $user_id = session('user_id');
+        
+        
+        my $sticky = 0;
+        my $locked = 0;
+
+        
+        if (session('moderator')) {
+            $sticky = param 'sticky';
+            $locked = param 'locked';
+            
+            $sticky = defined($sticky) ? 1 : 0;
+            $locked = defined($locked) ? 1 : 0;
+        }
         
         my $insert = schema->resultset('ForumThread')->create({
             topic_id => $topic_id,
             thread_title => $title,
             thread_created => $date,
             user_id => $user_id,
+            sticky => $sticky,
+            locked => $locked,
         });
         if ($insert->id) {
             my $id = $insert->id;
@@ -279,6 +357,7 @@ post '/c/forums/new-forum' => sub {
         
         my $forum = param 'newforum';
         if (length $forum) {
+            $forum = strip_tags($forum);
             my $date = time;
             my $create = schema->resultset('Forum')->create({ forum_created => $date, forum_title => $forum});
             if ($create->id) {
@@ -301,6 +380,85 @@ post '/c/forums/new-forum' => sub {
     }
 };
     
+get '/register' => sub {
+    use DateTime::TimeZone;
+	my @timezones = DateTime::TimeZone->all_names;
+	var timezones => \@timezones;
+    template 'register.tt';
+    
+};
+
+post '/register' => sub {
+    my $username = param 'username';
+    my $password1 = param 'password1';
+    my $password2 = param 'password2';
+    my $timezone = param 'timezone';
+    
+    
+    my @errors;
+    
+    if ($username =~ /\w{3,16}/) {
+        
+        my $search = schema->resultset('User')->search({ username => $username })->count;
+        
+        if ($search == 0) {
+            
+            var username => $username;
+        
+            if (length $password1 > 6) {
+            
+                if ($password1 eq $password2) {
+                    var password1 => $password1;
+                    var password2 => $password2;
+                    var timezone => $timezone;
+                
+                    use Crypt::PasswdMD5;
+                    my $hash = unix_md5_crypt($password1);
+                    my $date = time;
+                
+                
+                    my $create = schema->resultset('User')->create({
+                        username => $username,
+                        date_joined => $date,
+                        password => $hash,
+                        role => "member",
+                    });
+                    if ($create->id) {
+                        
+                        session authenticated => 1;
+                        session username      => $username;
+                        session user_id       => $create->id;
+                        session role          => "member";
+                        session timezone	  => $timezone;
+                        
+                        redirect '/c/profile';
+                    }
+                }
+                else {
+                    push (@errors,"Passwords do not match");
+                    
+                }
+
+            }
+            else {
+                push(@errors,"Password should be longer that 6 characters");
+            }
+            
+        }
+        else {
+            push(@errors,"Username already exists");
+        }
+    }
+    else {
+        push(@errors,"Invalid username");
+        
+    }
+    var errors => \@errors;
+        use DateTime::TimeZone;
+	my @timezones = DateTime::TimeZone->all_names;
+	var timezones => \@timezones;
+    template 'register.tt';
+};
 
 1;
 

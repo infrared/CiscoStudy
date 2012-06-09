@@ -1,6 +1,15 @@
 [% INCLUDE header.tt %]
 
 
+<h3>
+    <a href="/forums">Forums</a> /
+    <a href="/forums/[% vars.topic.forum.forum_id %]">[% vars.topic.forum.forum_title %]</a> /
+    <a href="/forums/topic/[% vars.topic.topic_id %]/[% vars.topic.topic_title.replace(' ', '-') %]">[% vars.topic.topic_title %]</a> /
+    [% vars.thread.thread_title %]
+</h3>
+
+    
+    
 
 [% FOREACH post IN vars.posts %]
     
@@ -38,6 +47,9 @@
     </table>    <div style="height: 4px;"></div>
 
 [% END %]
+    [% IF vars.thread.locked == 1%]
+        <br /><p><img src="/images/lock_icon.png" alt="locked" /> This thread is locked</p>
+    [% ELSE %]
         <a id="showhidetrigger" href="#showhidetarget">Reply</a>
     <div id="showhidetarget"><br />
         
@@ -60,6 +72,7 @@
             });
         });
     </script>
+    [% END %]
 
 
 [% INCLUDE footer.tt %]

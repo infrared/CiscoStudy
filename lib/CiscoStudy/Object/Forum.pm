@@ -71,18 +71,23 @@ sub get_topics {
 sub get_topic {
     my ($self,$thread_id) = @_;
     my $row = schema->resultset('ForumTopic')->find($thread_id);
+    if ($row) {
     
-    my $date = $t_obj->date($row->topic_created);
-    my $forum_id = $row->forum_id;
-    my $forum = $self->get_forum($forum_id);
-    my $hash = {
-        topic_id => $thread_id,
-        forum => $forum,
-        topic_title => $row->topic_title,
-        date => $date,
-        threads => $row->threads,
-    };
-    return $hash;
+        my $date = $t_obj->date($row->topic_created);
+        my $forum_id = $row->forum_id;
+        my $forum = $self->get_forum($forum_id);
+        my $hash = {
+            topic_id => $thread_id,
+            forum => $forum,
+            topic_title => $row->topic_title,
+            date => $date,
+            threads => $row->threads,
+        };
+        return $hash;
+    }
+    else {
+        return 0;
+    }
 }
 sub get_forum {
     my ($self,$forum_id) = @_;
@@ -97,16 +102,79 @@ sub get_forum {
     return $hash;
         
 }
-
-sub get_threads {
+sub count_threads {
     my ($self,$topic_id) = @_;
-    my $search = schema->resultset('ForumThread')->search(
-        { topic_id => $topic_id},
-        { order_by => { -desc => 'thread_created'}}
-    );
+    
+    my $count = schema->resultset('ForumThread')->search({ topic_id => $topic_id})->count;
+    return $count;
+}
+
+sub get_thread {
+    my ($self,$thread_id) = @_;
+    
+    my $search = schema->resultset('ForumThread')->find($thread_id);
+    if ($search) {
+        my $row = $search;
+        my $id = $row->user_id;
+        my $user = $u_obj->get_user($id);
+        my $date = $t_obj->date($row->thread_created);
+            
+        my $last_post_user = undef;
+        my $last_post_date = undef;
+        if ((defined $row->last_post_user_id) && (defined $row->last_post_date)) {
+            $last_post_user = $u_obj->get_user($row->last_post_user_id);
+            $last_post_date = $t_obj->date($row->last_post_date);
+        }
+        my $hash = {
+            thread_id => $row->thread_id,
+            topic_id => $row->topic_id,
+            thread_title => $row->thread_title,
+            thread_posts => $row->thread_posts,
+            thread_views => $row->thread_views,
+            date_created => $date,
+            user_id => $id,
+            user =>  $user,
+            last_post_user => $last_post_user,
+            last_post_date => $last_post_date,
+            sticky => $row->sticky,
+            locked => $row->locked,
+            
+        };
+        return $hash;
+    }
+    else {
+        return 0;
+    }
+}
+sub get_threads {
+    my ($self,$topic_id,$page) = @_;
+    
     my @threads;
-    if ($search->count) {
-        while (my $row = $search->next) {
+    
+    
+    my $rows = 10;
+    
+    # sticky threads
+    
+    
+    my $sticky_search = schema->resultset('ForumThread')->search(
+        { topic_id => $topic_id, sticky => 1},
+        { rows => 10, order_by => { -desc => 'thread_created'}}
+    )->page($page);
+    
+    
+    # regular threads
+    
+    my $sticky_count = $sticky_search->count;
+    my $rows_regular = 10 - $sticky_count;
+    my $regular_search = schema->resultset('ForumThread')->search(
+        { topic_id => $topic_id, sticky => 0 },
+        
+        { rows => $rows_regular, order_by => { -desc => 'thread_created'}}
+    )->page($page);
+
+    if ($sticky_count) {
+        while (my $row = $sticky_search->next) {
             my $id = $row->user_id;
             my $user = $u_obj->get_user($id);
             my $date = $t_obj->date($row->thread_created);
@@ -127,14 +195,46 @@ sub get_threads {
                 user =>  $user,
                 last_post_user => $last_post_user,
                 last_post_date => $last_post_date,
+                sticky => $row->sticky,
+                locked => $row->locked,
                 
                 
             };
             push(@threads,$hash);
         }
-        return \@threads;
     }
-    return 0;
+    if ($regular_search->count) {
+        while (my $row = $regular_search->next) {
+            my $id = $row->user_id;
+            my $user = $u_obj->get_user($id);
+            my $date = $t_obj->date($row->thread_created);
+            
+            my $last_post_user = undef;
+            my $last_post_date = undef;
+            if ((defined $row->last_post_user_id) && (defined $row->last_post_date)) {
+                $last_post_user = $u_obj->get_user($row->last_post_user_id);
+                $last_post_date = $t_obj->date($row->last_post_date);
+            }
+            my $hash = {
+                thread_id => $row->thread_id,
+                thread_title => $row->thread_title,
+                thread_posts => $row->thread_posts,
+                thread_views => $row->thread_views,
+                date_created => $date,
+                user_id => $id,
+                user =>  $user,
+                last_post_user => $last_post_user,
+                last_post_date => $last_post_date,
+                sticky => $row->sticky,
+                locked => $row->locked,
+                
+                
+            };
+            push(@threads,$hash);
+        }
+
+    }
+    return \@threads;
     
 }
 
@@ -192,10 +292,11 @@ sub get_post {
     
 }
 sub get_flag {
-    my ($self,$flag_id) = @_;
-    my $flag = schema->resultset('ForumFlag')->find($flag_id);
+    my ($self,$post_id) = @_;
+    my $search = schema->resultset('ForumFlag')->search({ post_id => $post_id });
     
-    if ($flag) {
+    if ($search->count) {
+        my $flag = $search->first;
         my $flag_id = $flag->flag_id;
         my $date = $t_obj->date($flag->flag_date);
         my $user = $u_obj->get_user($flag->user_id);

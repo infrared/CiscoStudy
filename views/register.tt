@@ -1,0 +1,35 @@
+[% INCLUDE header.tt %]
+
+
+[% vars.info %]
+<form method="POST" action="/register">
+<table class="inner" width="700">
+	<tr><td colspan="2"><h3>Register</h3></td></tr>
+	<tr><td width="150">Username</td><td align="left"><input type="text" name="username" autocomplete="off" value="[% vars.username %]"></td></tr>
+	
+	
+	   <tr><td>TimeZone:</td><td><select name="timezone">
+[% FOREACH zone IN vars.timezones %]
+    
+    <option value="[% zone %]" [% IF zone == vars.timezone %] SELECTED[% END %]>[% zone %]</option>
+
+[% END %]
+</select></td></tr>
+	
+	
+	<tr><td>Password</td><td><input type="password" name="password1" value="[% vars.password1 %]"></td></tr>
+	<tr><td>Password (confirm)</td><td><input type="password" name="password2" value="[% vars.password2 %]" /></td></tr>
+    <tr><td colspan="2">	<input type="submit" value="Register"></td></tr>
+</table>
+</form>
+
+[% IF vars.errors.defined %]
+    Error(s):<br />
+    [% FOR error IN vars.errors %]
+		<li>[% error %]</li>
+    [% END %]
+[% END %]
+
+
+[% INCLUDE footer.tt %]
+

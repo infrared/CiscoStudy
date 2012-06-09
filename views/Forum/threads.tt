@@ -1,15 +1,35 @@
 [% INCLUDE header.tt %]
 
 
+
+
+<h3><a href="/forums">Forums</a> / <a href="/forums/[% vars.topic.forum.forum_id %]">[% vars.topic.forum.forum_title %]</a> / [% vars.topic.topic_title %]</h3>
+
+[% IF session.username.defined %]
 <a href="/c/forums/new-thread">New Thread</a><br />
-<a href="/forums">Forums</a>/<a href="/forums/[% vars.topic.forum.forum_id %]">[% vars.topic.forum.forum_title %]</a>
+[% ELSE %]
+    <a href="/c/login">Login or Register to create a new thread</a><br />
+[% END %]
+
+
+[% IF vars.threads.size > 0 %]
+
 <table class="forum" width="100%">
 <tr><td class="forumheader">Active Threads</td><td class="forumheader" width="65" align="center">Replies</td><td class="forumheader" width="65" align="center">Views</td><td class="forumheader">Last Post</td></tr>
 [% FOREACH thread IN vars.threads %]
     
 
 
-<tr><td class="forumtopic"><a href="/forums/thread/[% thread.thread_id %]/[% thread.thread_title.replace(' ','-') %]">[% thread.thread_title %]</a><br /> by [% thread.user.username %] - [% thread.date_created %]</td>
+<tr>
+    <td class="forumtopic">
+                [% IF thread.sticky == 1 %]
+            <img src="/images/icon_sticky.png" alt="sticky">
+        [% END %]
+        [% IF thread.locked == 1 %]
+            <img src="/images/lock_icon.png" alt="locked">
+        [% END %]
+        
+        <a href="/forums/thread/[% thread.thread_id %]/[% thread.thread_title.replace(' ','-') %]">[% thread.thread_title %]</a><br /> by [% thread.user.username %] - [% thread.date_created %]</td>
     <td class="forumtopic" align="center">[% thread.thread_posts - 1 %]</td><td class="forumtopic" align="center">[% thread.thread_views %]</td>
     <td class="forumtopic">[% IF thread.last_post_date.defined %]
         by [% thread.last_post_user.username %]<br />[% thread.last_post_date %]
@@ -19,6 +39,19 @@
 
 [% END %]
 </table>
+[% ELSE %]<br /><br />
+    <table class="forum" width="100%">
+        <tr><td class="forumtopic" align="center">
+    <p>No threads exist for this topic</p><br />
+    <a href="/c/forums/new-thread">Click here to start a new thread!</a><br />
+        </td></tr>
+    </table>
+[% END %]
+<p>page:&nbsp;&nbsp;&nbsp;  
+[% FOR page IN [ 1 .. vars.pages ] %]
+    <a href="/forums/topic/[% vars.topic.topic_id %]/[% vars.topic.topic_title %]/[% page %]">&nbsp;&nbsp;[% page %]&nbsp;&nbsp;</a>&nbsp;  
+[% END %]
+</p>
 
 [% INCLUDE footer.tt %]
 

@@ -17,7 +17,9 @@
     <br />[% topic.topic_desc %]</td><td class="forumtopic" align="center">[% topic.threads %]</td><td class="forumtopic" align="center">[% topic.posts %]</td>
             <td class="forumtopic">[% IF topic.last_post_date.defined %]
         by [% topic.last_post_user.username %]<br />[% topic.last_post_date %]
-        [% END %]
+        [% ELSE %]
+            &nbsp;<br />&nbsp;
+            [% END %]
     </td></tr>
 [% END %]
 

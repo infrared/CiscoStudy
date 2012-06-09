@@ -10,15 +10,15 @@
 	[% IF session.authenticated.defined %]
 		<a href="/logout">logout</a>
 	[% ELSE %]
-		<a href="/login">login</a>
+		<a href="/login">login</a> or <a href="/register">register</a>
 	[% END %]
 	<br />
 	[% IF session.username.defined %]
 	<br /><br />
-	<b>Management</b><br />
-	<a href="/c/cisco-quiz-menu">Quiz Questions</a><br />
+	[% IF session.contributor.defined %]<b>Management</b><br />[% END %]
+	[% IF session.contributor.defined %]<a href="/c/cisco-quiz-menu">Quiz Questions[% END %]</a><br />
 	[% IF session.moderator.defined %]<a href="/c/categories">Categories</a><br />[% END %]
-	[% IF session.contributor.defined %]<a href="/c/cert-levels">Certifications</a><br />[% END %]
+	[% IF session.moderator.defined %]<a href="/c/cert-levels">Certifications</a><br />[% END %]
 	[% IF session.moderator.defined %]<a href="/c/users">Users</a><br />[% END %]
 	[% END %]
 	

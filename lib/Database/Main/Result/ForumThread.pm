@@ -12,6 +12,8 @@ __PACKAGE__->add_columns(qw/
     user_id
     last_post_date
     last_post_user_id
+    sticky
+    locked
     
 /);
 __PACKAGE__->set_primary_key('thread_id');
@@ -31,8 +33,11 @@ mysql> describe forum_thread;
 | user_id           | int(10) unsigned | NO   |     | NULL    |                |
 | last_post_date    | int(15) unsigned | YES  |     | NULL    |                |
 | last_post_user_id | int(10) unsigned | YES  |     | NULL    |                |
+| sticky            | int(1) unsigned  | YES  |     | 0       |                |
+| locked            | int(1) unsigned  | YES  |     | 0       |                |
 +-------------------+------------------+------+-----+---------+----------------+
-9 rows in set (0.00 sec)
+11 rows in set (0.00 sec)
+
 
 
 
