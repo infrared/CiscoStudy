@@ -3,7 +3,7 @@
 [% IF session.admin.defined %]
 <a href="/c/forums/new-topic">new topic</a><br />
 [% END %]
-<h2><a href="/forums">Forums</a> / [% vars.forum.forum_title %]</h2>
+<h2><a href="/forums">Forums</a> / [% vars.forum.forum_title_safe %]</h2>
 
     
 <table width="100%" class="forum">
@@ -13,7 +13,7 @@
     
 [% FOREACH topic IN vars.forum.topics %]
 
-    <tr><td class="forumtopic"><a href="/forums/topic/[% topic.topic_id %]/[% topic.topic_title.replace(' ','-') %]">[% topic.topic_title %]</a>
+    <tr><td class="forumtopic"><a href="/forums/topic/[% topic.topic_id %]/[% topic.topic_title_safe %]">[% topic.topic_title %]</a>
     <br />[% topic.topic_desc %]</td><td class="forumtopic" align="center">[% topic.threads %]</td><td class="forumtopic" align="center">[% topic.posts %]</td>
             <td class="forumtopic">[% IF topic.last_post_date.defined %]
         by [% topic.last_post_user.username %]<br />[% topic.last_post_date %]

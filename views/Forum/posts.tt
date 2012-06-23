@@ -3,8 +3,8 @@
 
 <h3>
     <a href="/forums">Forums</a> /
-    <a href="/forums/[% vars.topic.forum.forum_id %]/[% vars.topic.forum.forum_title %]">[% vars.topic.forum.forum_title %]</a> /
-    <a href="/forums/topic/[% vars.topic.topic_id %]/[% vars.topic.topic_title.replace(' ', '-') %]">[% vars.topic.topic_title %]</a> /
+    <a href="/forums/[% vars.topic.forum.forum_id %]/[% vars.topic.forum.forum_title_safe %]">[% vars.topic.forum.forum_title_safe %]</a> /
+    <a href="/forums/topic/[% vars.topic.topic_id %]/[% vars.topic.topic_title_safe %]">[% vars.topic.topic_title_safe %]</a> /
     [% vars.thread.thread_title %]
 </h3>
 

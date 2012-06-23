@@ -102,6 +102,7 @@ sub get_topics {
             my $hash = {
                 topic_id => $row->topic_id,
                 topic_title => $row->topic_title,
+                topic_title_safe => $t_obj->safe($row->topic_title),
                 topic_desc => $row->topic_desc,
                 threads => $row->threads,
                 posts => $row->posts,
@@ -125,6 +126,7 @@ sub get_topic {
             topic_id => $thread_id,
             forum => $forum,
             topic_title => $row->topic_title,
+            topic_title_safe => $t_obj->safe($row->topic_title),
             date => $date,
             threads => $row->threads,
         };
@@ -163,6 +165,7 @@ sub get_thread {
             thread_id => $row->thread_id,
             topic_id => $row->topic_id,
             thread_title => $row->thread_title,
+            thread_title_safe => $t_obj->safe($row->thread_title),
             thread_post => $row->thread_post,
             thread_posts => $row->thread_posts,
             thread_views => $row->thread_views,
@@ -225,6 +228,7 @@ sub get_threads {
             my $hash = {
                 thread_id => $row->thread_id,
                 thread_title => $row->thread_title,
+                thread_title_safe => $t_obj->safe($row->thread_title),
                 thread_posts => $row->thread_posts,
                 thread_views => $views,
                 date_created => $date,
@@ -256,6 +260,7 @@ sub get_threads {
             my $hash = {
                 thread_id => $row->thread_id,
                 thread_title => $row->thread_title,
+                thread_title_safe => $t_obj->safe($row->thread_title),
                 thread_posts => $row->thread_posts,
                 thread_views => $views,
                 date_created => $date,
