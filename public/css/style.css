@@ -76,7 +76,11 @@ body>#Header {height:14px;}
 	top: 25px;
 	right: 250px;
 }
-
+#code {
+	background-color:#FFFFFD;
+	border: 1px solid #ECD5D8;
+	padding-left: 15px;
+}
 #Menu {
 	position:absolute;
 	top:100px;

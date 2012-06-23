@@ -5,7 +5,7 @@ use warnings;
 use Digest::MD5 qw(md5_hex);
 use Dancer::Plugin::DBIC;
 use Dancer ':syntax';
-
+use HTML::StripTags qw(strip_tags);
 use DateTime;
 sub new {
     my $class = shift;
@@ -35,6 +35,17 @@ sub date {
 	}
 	
 	
+}
+
+
+sub safe {
+    my ($self,$string) = @_;
+    
+    $string = strip_tags($string);
+    $string =~ s/[^\w]/\-/g;
+    
+    return $string;    
+
 }
 
 

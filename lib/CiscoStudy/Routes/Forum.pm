@@ -18,14 +18,20 @@ get '/forums' => sub {
     
     var forums => $f_obj->get_forums;
     
-    template 'Forum/forum.tt';
+    template 'Forum/forums.tt';
     
 
 };
-get '/forums/*' => sub {
-    my ($forum_id) = splat;
-    var forums => $f_obj->get_forums($forum_id);
-    template 'Forum/forum.tt';
+get '/forums/*/*' => sub {
+    my ($forum_id,undef) = splat;
+    if (my $forum = $f_obj->get_forum($forum_id)) {
+        var forum => $forum;
+        template 'Forum/forum.tt';
+    }
+    else {
+        var error => "Unknown forum";
+        template 'error.tt';
+    }
 };
 
 get '/forums/topic/*/*' => sub {
@@ -102,6 +108,21 @@ get '/forums/thread/*/*' => sub {
         if (my $thread = $f_obj->get_thread($thread_id)) {
             my $topic_id = $thread->{'topic_id'};
             var topic => $f_obj->get_topic($topic_id);
+            if (!session('threads_viewed')) {
+                
+                
+                session 'threads_viewed' => [];
+            }
+
+            my $threads_viewed = session('threads_viewed');
+
+            if (!grep($_ == $thread_id, @{ $threads_viewed })) {
+                print "nope";
+                $f_obj->increase_view($thread_id);
+                push (@{$threads_viewed}, $thread_id);
+                session 'threads_viewed' => $threads_viewed;
+            }
+
             var thread => $thread;
             var posts => $f_obj->get_posts($thread_id);
             session current_thread => $thread_id;
@@ -308,6 +329,7 @@ post '/c/forums/new-thread' => sub {
         my $insert = schema->resultset('ForumThread')->create({
             topic_id => $topic_id,
             thread_title => $title,
+            thread_post => $post,
             thread_created => $date,
             user_id => $user_id,
             sticky => $sticky,
@@ -315,21 +337,9 @@ post '/c/forums/new-thread' => sub {
         });
         if ($insert->id) {
             my $id = $insert->id;
-            my $newpost = schema->resultset('ForumPost')->create({
-                thread_id => $id,
-                post_created => $date,
-                post => $post,
-                user_id => $user_id,
-            });
-            if ($newpost->id) {
-                var success => 1;
-                session current_thread => $id;
-                redirect '/forums/thread/'. $id .'/'. $title;
-            }
-            else {
-                var error => "error inserting new post";
-                template 'error.tt';
-            }
+            var success => 1;
+            session current_thread => $id;
+            redirect '/forums/thread/'. $id .'/'. $title;
         }
         else {
             var error => "error inserting new thread";
@@ -355,11 +365,12 @@ get '/c/forums/new-forum' => sub {
 post '/c/forums/new-forum' => sub {
     if (session('admin')) {
         
-        my $forum = param 'newforum';
+        my $forum = param 'forum';
+        my $description = param 'description';
         if (length $forum) {
             $forum = strip_tags($forum);
             my $date = time;
-            my $create = schema->resultset('Forum')->create({ forum_created => $date, forum_title => $forum});
+            my $create = schema->resultset('Forum')->create({ forum_created => $date, forum_title => $forum, forum_desc => $description});
             if ($create->id) {
                 var success => 1;
                 template 'Forum/new-forum.tt';
@@ -387,6 +398,61 @@ get '/register' => sub {
     template 'register.tt';
     
 };
+
+get '/c/forums/post-edit/*' => sub {
+    if (session('moderator')) {
+        
+        my ($post_id) = splat;
+        if (my $post = $f_obj->get_post($post_id)) {
+            var post => $post;
+            session post_edit => $post_id;
+            template 'Forum/post-edit.tt';
+        }
+        else {
+            var error => "unknown post id";
+            template 'error.tt';
+        }
+        
+    }
+    else {
+        template 'permission-denied.tt';
+    }
+};
+post '/c/forums/post-edit/*' => sub {
+    if (session('moderator')) {
+        my ($post_id) = splat;
+        if (session('post_edit') == $post_id) {
+            
+            my $post = param 'post';
+            my $reason = param 'reason';
+            my $date = time;
+            my $user_id = session('user_id');
+            
+            my $find = schema->resultset('ForumPost')->find($post_id);
+            
+            $find->update({
+                post => $post,
+                post_edit => 1,
+                post_edit_date => $date,
+                post_edit_reason => $reason,
+                post_edit_user_id => $user_id,
+            });
+            if ($find->id) {
+                redirect '/forums';
+            }
+        }
+        else {
+            var error => 'Post ID does not match session post id';
+            template 'error.tt';
+            
+        }
+        
+    }
+    else {
+        template 'permission-denied.tt';
+    }
+};
+
 
 post '/register' => sub {
     my $username = param 'username';
@@ -421,6 +487,7 @@ post '/register' => sub {
                         username => $username,
                         date_joined => $date,
                         password => $hash,
+                        timezone => $timezone,
                         role => "member",
                     });
                     if ($create->id) {

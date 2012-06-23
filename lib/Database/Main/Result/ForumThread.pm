@@ -6,6 +6,7 @@ __PACKAGE__->add_columns(qw/
     thread_id
     topic_id
     thread_title
+    thread_post
     thread_posts
     thread_views
     thread_created
@@ -27,6 +28,7 @@ mysql> describe forum_thread;
 | thread_id         | int(11)          | NO   | PRI | NULL    | auto_increment |
 | topic_id          | int(10) unsigned | NO   |     | NULL    |                |
 | thread_title      | varchar(250)     | NO   |     | NULL    |                |
+| thread_post       | blob             | NO   |     | NULL    |                |
 | thread_posts      | int(10) unsigned | YES  |     | 0       |                |
 | thread_views      | int(10) unsigned | YES  |     | 0       |                |
 | thread_created    | int(15) unsigned | NO   |     | NULL    |                |
@@ -36,7 +38,8 @@ mysql> describe forum_thread;
 | sticky            | int(1) unsigned  | YES  |     | 0       |                |
 | locked            | int(1) unsigned  | YES  |     | 0       |                |
 +-------------------+------------------+------+-----+---------+----------------+
-11 rows in set (0.00 sec)
+12 rows in set (0.00 sec)
+
 
 
 

@@ -3,4 +3,8 @@
 <h1>Oh Hai!</h1>
 <p>Welcome to the official unofficial Cisco study website!</p>
 
+
+<br /><br /><br />
+
+[% vars.agent %]
 [% INCLUDE footer.tt %]

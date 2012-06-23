@@ -8,3 +8,6 @@ create table forum (forum_id int primary key auto_increment, date_created int(14
 
 
 create table forum_post (post_id int auto_increment primary key, thread_id int unsigned not null, date_created int(14) unsigned not null, post blob not null, user_id int unsigned not null);
+
+
+mysql> create table thread_views (view_id int primary key auto_increment, thread_id int(10) unsigned not null, views int(10) unsigned not null);

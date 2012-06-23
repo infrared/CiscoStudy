@@ -1,0 +1,31 @@
+[% INCLUDE header.tt %]
+
+[% IF session.admin.defined %]
+<a href="/c/forums/new-forum">new forum</a><br />
+<a href="/c/forums/new-topic">new topic</a><br />
+[% END %]
+<h2><a href="/forums">Forums</a></h2>
+
+    
+<table width="100%" class="forum">
+    <tr><td class="forumheader">Cisco Study Forums</td><td width="65" class="forumheader">Topics</td><td width="65" class="forumheader">Posts</td><td width="200" class="forumheader">Last Post</td></tr>
+    
+    [% FOREACH forum IN vars.forums %]
+
+<tr><td class="forumtopic">
+<a href="/forums/[% forum.forum_id %]/[% forum.forum_title %]"><div style="height:100%;width:100%">
+
+[% forum.forum_title %]</div></a>[% forum.forum_desc %]</td><td class="forumtopic" width="65" align="center">[% forum.topics %]</td><td class="forumtopic" width="65" align="center">[% forum.posts %]</td>
+            <td class="forumtopic">[% IF forum.last_post_date.defined %]
+        by [% forum.last_post_by.username %]<br />[% forum.last_post_date %]
+        [% ELSE %]
+            &nbsp;<br />&nbsp;
+            [% END %]
+</tr>
+
+
+
+[% END %]
+</table>
+
+[% INCLUDE footer.tt %]

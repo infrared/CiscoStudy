@@ -7,6 +7,7 @@ use Dancer ':syntax';
 
 use CiscoStudy::Object::User;
 use CiscoStudy::Tools;
+
 my $t_obj = CiscoStudy::Tools->new;
 my $u_obj = CiscoStudy::Object::User->new;
 
@@ -15,26 +16,42 @@ sub new {
     my $self = bless {}, $class;
     return $self;
 }
-
 sub get_forums {
-    my ($self,$forum_id) = @_;
+    my ($self) = @_;
     
-    my $search_hash = {};
-    if ($forum_id) {
-        $search_hash = { forum_id => $forum_id };
-        
-    }
-    my $search = schema->resultset('Forum')->search($search_hash);
+    my $search = schema->resultset('Forum')->search(undef, { order_by => { -asc => 'forum_order'}});
     
     my @forums;
     if ($search->count) {
         while (my $row = $search->next) {
             my $forum_id = $row->forum_id;
-            my $topics = $self->get_topics($forum_id);
+            #my $topics = $self->get_topics($forum_id);
+            
+            
+
+            my $last_post_user = undef;
+            my $last_post_date = undef;
+            if (($row->last_post_by > 0) && ($row->last_post_date > 0)) {
+                $last_post_user = $u_obj->get_user($row->last_post_by);
+                $last_post_date = $t_obj->date($row->last_post_date);
+            }
+            
+
+
             my $hash = {
                 forum_id => $forum_id,
-                forum_title => $row->forum_title,
-                topics => $topics,
+                forum_title      => $row->forum_title,
+                forum_title_safe => $t_obj->safe($row->forum_title),
+                
+                forum_desc => $row->forum_desc,
+                forum_desc_safe => $t_obj->safe($row->forum_desc),
+                
+                topics => $row->topics,
+                posts => $row->posts,
+                last_post_date => $last_post_date,
+                last_post_by  => $last_post_user,
+                
+                #topics => $topics,
             };
             push (@forums,$hash);
         }
@@ -42,9 +59,37 @@ sub get_forums {
     return \@forums;
     
 }
+
+sub get_forum {
+    my ($self,$forum_id) = @_;
+    
+    my $search = schema->resultset('Forum')->find($forum_id);
+    
+    
+    if ($search) {
+
+        my $row = $search;
+        my $forum_id = $row->forum_id;
+        my $topics = $self->get_topics($forum_id);
+        my $hash = {
+            forum_id => $forum_id,
+            forum_title => $row->forum_title,
+            forum_title_safe => $t_obj->safe($row->forum_title),
+            topics => $topics,
+            
+        };
+              
+        return $hash;
+    }
+    else {
+        return 0;
+    }
+    
+    
+}
 sub get_topics {
     my ($self,$id) = @_;
-    my $search = schema->resultset('ForumTopic')->search({ forum_id => $id });
+    my $search = schema->resultset('ForumTopic')->search({ forum_id => $id },{ order_by => { -asc => 'topic_order'}});
     my @topics;
     if ($search->count) {
         while(my $row = $search->next) {
@@ -89,19 +134,8 @@ sub get_topic {
         return 0;
     }
 }
-sub get_forum {
-    my ($self,$forum_id) = @_;
-    my $row = schema->resultset('Forum')->find($forum_id);
-    my $date = $t_obj->date($row->forum_created);
-    my $hash = {
-        forum_id => $forum_id,
-        date => $date,
-        forum_title => $row->forum_title,
-        
-    };
-    return $hash;
-        
-}
+
+
 sub count_threads {
     my ($self,$topic_id) = @_;
     
@@ -129,6 +163,7 @@ sub get_thread {
             thread_id => $row->thread_id,
             topic_id => $row->topic_id,
             thread_title => $row->thread_title,
+            thread_post => $row->thread_post,
             thread_posts => $row->thread_posts,
             thread_views => $row->thread_views,
             date_created => $date,
@@ -178,6 +213,8 @@ sub get_threads {
             my $id = $row->user_id;
             my $user = $u_obj->get_user($id);
             my $date = $t_obj->date($row->thread_created);
+            my $thread_id = $row->thread_id;
+            my $views = $self->get_thread_views($thread_id);
             
             my $last_post_user = undef;
             my $last_post_date = undef;
@@ -189,7 +226,7 @@ sub get_threads {
                 thread_id => $row->thread_id,
                 thread_title => $row->thread_title,
                 thread_posts => $row->thread_posts,
-                thread_views => $row->thread_views,
+                thread_views => $views,
                 date_created => $date,
                 user_id => $id,
                 user =>  $user,
@@ -208,7 +245,8 @@ sub get_threads {
             my $id = $row->user_id;
             my $user = $u_obj->get_user($id);
             my $date = $t_obj->date($row->thread_created);
-            
+            my $thread_id = $row->thread_id;
+            my $views = $self->get_thread_views($thread_id);
             my $last_post_user = undef;
             my $last_post_date = undef;
             if ((defined $row->last_post_user_id) && (defined $row->last_post_date)) {
@@ -219,7 +257,7 @@ sub get_threads {
                 thread_id => $row->thread_id,
                 thread_title => $row->thread_title,
                 thread_posts => $row->thread_posts,
-                thread_views => $row->thread_views,
+                thread_views => $views,
                 date_created => $date,
                 user_id => $id,
                 user =>  $user,
@@ -249,11 +287,27 @@ sub get_posts {
             my $user_id = $row->user_id;
             my $user = $u_obj->get_user($user_id);
             my $date = $t_obj->date($row->post_created);
+            
+            
+            my $post_edit_date;
+            my $post_edit_user;
+            
+            if ( $row->post_edit > 0) {
+                $post_edit_date = $t_obj->date($row->post_edit_date);
+                $post_edit_user = $u_obj->get_user($row->post_edit_user_id);
+            }
+                
+            
             my $hash = {
                 post_id => $row->post_id,
                 thread_id => $row->thread_id,
                 date => $date,
                 post => $row->post,
+                post_safe => $t_obj->safe($row->post),
+                post_edit => $row->post_edit,
+                post_edit_date => $post_edit_date,
+                post_edit_reason => $row->post_edit_reason,
+                post_edit_user => $post_edit_user,
                 user => $user,
                 user_id => $user_id,
             };
@@ -312,6 +366,37 @@ sub get_flag {
         return $hash;
     }
     return 0;
+}
+
+sub increase_view {
+    my ($self,$thread_id) = @_;
+    
+    my $search = schema->resultset('ThreadViews')->search({ thread_id => $thread_id });
+    
+    if ($search->count) {
+        my $row = $search->first;
+        my $views = $row->views + 1;
+        $row->update({ views => $views });
+        
+    }
+    else {
+        my $create = schema->resultset('ThreadViews')->create({ thread_id => $thread_id,views => 1 });
+    }
+    
+}
+sub get_thread_views {
+    my ($self,$thread_id) = @_;
+    
+    my $search = schema->resultset('ThreadViews')->search({ thread_id => $thread_id});
+    
+    if ($search->count) {
+        return $search->first->views;
+    }
+    else {
+        return 0;
+    }
+    
+    
 }
 
 1;

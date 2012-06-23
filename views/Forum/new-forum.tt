@@ -2,7 +2,8 @@
 
 <form method="post" action="/c/forums/new-forum">
 
-Forum name: <input type="text" name="newforum"><br />
+Forum name: <input type="text" name="forum"><br />
+<input type="text" name="description">
 <input type="submit" value="Add Forum">
 </form>
 

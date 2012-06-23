@@ -1,17 +1,17 @@
 [% INCLUDE header.tt %]
 
 [% IF session.admin.defined %]
-<a href="/c/forums/new-forum">new forum</a><br />
 <a href="/c/forums/new-topic">new topic</a><br />
 [% END %]
-<a href="/forums"><h2>Forums</h2></a>
-[% FOREACH forum IN vars.forums %]
+<h2><a href="/forums">Forums</a> / [% vars.forum.forum_title %]</h2>
+
     
-<table class="forum">
+<table width="100%" class="forum">
+    <tr><td class="forumheader">[% vars.forum.forum_title %]</td><td width="65" class="forumheader">Threads</td><td width="65" class="forumheader">Posts</td><td width="200" class="forumheader">Last Post</td></tr>
 
-<tr><td width="300" class="forumheader">[% forum.forum_title %]</td><td class="forumheader" width="65" align="center">Threads</td><td class="forumheader" width="65" align="center">Posts</td><td class="forumheader">Last Post</td></tr>
-
-[% FOREACH topic IN forum.topics %]
+    
+    
+[% FOREACH topic IN vars.forum.topics %]
 
     <tr><td class="forumtopic"><a href="/forums/topic/[% topic.topic_id %]/[% topic.topic_title.replace(' ','-') %]">[% topic.topic_title %]</a>
     <br />[% topic.topic_desc %]</td><td class="forumtopic" align="center">[% topic.threads %]</td><td class="forumtopic" align="center">[% topic.posts %]</td>
@@ -22,8 +22,10 @@
             [% END %]
     </td></tr>
 [% END %]
-
-[% END %]
 </table>
+
+
+
+
 
 [% INCLUDE footer.tt %]

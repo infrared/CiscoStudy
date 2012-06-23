@@ -1,0 +1,47 @@
+[% INCLUDE header.tt %]
+
+
+<h2>Post Edit</h2>
+
+
+    <table class="odd" width="100%">
+    <tr>
+        
+        <td width="100" valign="top" align="left" style="border-right: 2px solid #FFFFFF; padding-left: 5px;">
+        
+        [% IF vars.post.user.avatar.defined %]    
+        <img src="[% post.user.avatar %]"/><br />
+        [% END %]
+        <b>[% vars.post.user.username %]</b><br />
+        role: [% vars.post.user.role %]<br />
+        posts: [% vars.post.user.forum_posts %]
+        
+            
+            
+            
+        </td><td valign="top">
+        
+        <table>
+            <tr><td valign="top" style="border-bottom: 1px solid #FFFFFF";>[% vars.post.date %]</td></tr>
+            <tr><td valign="top">[% vars.post.post %]</td></tr>
+        
+        </table>
+        
+        
+        </td>
+    </tr>
+    </table>    <div style="height: 10px;"></div>
+    
+    <form method="post" action="/c/forums/post-edit/[% vars.post.post_id %]">
+    <textarea name="post" cols="60" rows="10">[% vars.post.post %]</textarea><br />
+    Reason (optional) <input type="text" name="reason"><br />
+    <input type="submit" value="Edit">
+        
+        </form>
+
+
+
+
+[% INCLUDE footer.tt %]
+
+

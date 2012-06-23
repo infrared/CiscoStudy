@@ -8,6 +8,7 @@ __PACKAGE__->add_columns(qw/
     topic_created
     topic_title
     topic_desc
+    topic_order
     threads
     posts
     last_post_date
@@ -27,12 +28,13 @@ mysql> describe forum_topic;
 | topic_created     | int(14) unsigned | NO   |     | NULL    |                |
 | topic_title       | varchar(250)     | NO   |     | NULL    |                |
 | topic_desc        | blob             | YES  |     | NULL    |                |
+| topic_order       | int(4) unsigned  | YES  |     | 0       |                |
 | threads           | int(10) unsigned | YES  |     | 0       |                |
 | posts             | int(10) unsigned | YES  |     | 0       |                |
 | last_post_date    | int(15) unsigned | YES  |     | NULL    |                |
 | last_post_user_id | int(10) unsigned | YES  |     | NULL    |                |
 +-------------------+------------------+------+-----+---------+----------------+
-9 rows in set (0.00 sec)
+10 rows in set (0.00 sec)
 
 mysql> 
 

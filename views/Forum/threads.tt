@@ -3,7 +3,7 @@
 
 
 
-<h3><a href="/forums">Forums</a> / <a href="/forums/[% vars.topic.forum.forum_id %]">[% vars.topic.forum.forum_title %]</a> / [% vars.topic.topic_title %]</h3>
+<h3><a href="/forums">Forums</a> / <a href="/forums/[% vars.topic.forum.forum_id %]/[% vars.topic.forum.forum_title %]">[% vars.topic.forum.forum_title %]</a> / [% vars.topic.topic_title %]</h3>
 
 [% IF session.username.defined %]
 <a href="/c/forums/new-thread">New Thread</a><br />
@@ -30,7 +30,7 @@
         [% END %]
         
         <a href="/forums/thread/[% thread.thread_id %]/[% thread.thread_title.replace(' ','-') %]">[% thread.thread_title %]</a><br /> by [% thread.user.username %] - [% thread.date_created %]</td>
-    <td class="forumtopic" align="center">[% thread.thread_posts - 1 %]</td><td class="forumtopic" align="center">[% thread.thread_views %]</td>
+    <td class="forumtopic" align="center">[% thread.thread_posts %]</td><td class="forumtopic" align="center">[% thread.thread_views %]</td>
     <td class="forumtopic">[% IF thread.last_post_date.defined %]
         by [% thread.last_post_user.username %]<br />[% thread.last_post_date %]
         [% END %]
@@ -52,6 +52,10 @@
     <a href="/forums/topic/[% vars.topic.topic_id %]/[% vars.topic.topic_title %]/[% page %]">&nbsp;&nbsp;[% page %]&nbsp;&nbsp;</a>&nbsp;  
 [% END %]
 </p>
+
+
+
+
 
 [% INCLUDE footer.tt %]
 

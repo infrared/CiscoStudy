@@ -7,7 +7,7 @@
         <tr><td><input type="checkbox" name="sticky"></td><td>Sticky</td></tr>
         <tr><td><input type="checkbox" name="locked"></td><td>Lock</td></tr>
     [% END %]
-<tr><td colspan="2"><textarea name="post" cols="40" rows="10"></textarea></td></tr>
+<tr><td colspan="2"><textarea name="post" cols="60" rows="10"></textarea></td></tr>
 <tr><td colspan="2"><input type="submit" value="Create Thread">
 </table>
 </form>

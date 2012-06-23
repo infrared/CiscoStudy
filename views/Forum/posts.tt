@@ -3,14 +3,81 @@
 
 <h3>
     <a href="/forums">Forums</a> /
-    <a href="/forums/[% vars.topic.forum.forum_id %]">[% vars.topic.forum.forum_title %]</a> /
+    <a href="/forums/[% vars.topic.forum.forum_id %]/[% vars.topic.forum.forum_title %]">[% vars.topic.forum.forum_title %]</a> /
     <a href="/forums/topic/[% vars.topic.topic_id %]/[% vars.topic.topic_title.replace(' ', '-') %]">[% vars.topic.topic_title %]</a> /
     [% vars.thread.thread_title %]
 </h3>
 
-    
-    
 
+<table class="even" width="100%">
+    <tr>
+        
+        <td width="100" valign="top" align="left" style="border-right: 2px solid #FFFFFF; padding-left: 5px;">
+        
+        [% IF vars.thread.user.avatar.defined %]    
+        <img src="[% vars.thread.user.avatar %]"/><br />
+        [% END %]
+        <b>[% vars.thread.user.username %]</b><br />
+        role: [% vars.thread.user.role %]<br />
+        posts: [% vars.thread.user.forum_posts %]
+        
+            
+            
+            
+        </td><td valign="top">
+        
+        <table width="100%">
+            <tr><td valign="top" style="border-bottom: 1px solid #FFFFFF";>[% vars.thread.date_created %]
+            <span style="float:right; padding-right: 5px;">
+            [% IF session.moderator.defined %]
+                <a href="/c/forums/thread-edit/[% vars.thread.thread_id %]">edit this thread</a></span>
+            [% ELSE %]
+                <a href="/c/forums/flag/[% post.post_id %]" title="flag this post for review"><img border="0" src="/images/red-flag.gif" alt="flag"></a>
+            [% END %]
+            </span>
+            </td></tr>
+            [% newpost = vars.thread.thread_post %]
+            
+            [% newpost = newpost.replace('<','&lt;') %]
+            [% newpost = newpost.replace('>','&gt;') %]
+
+            
+            [% object =  vars.question %]
+
+            [% newpost = newpost.replace('=code=','<div id="code"><code>') %]
+            [% newpost = newpost.replace('=code=\n','<div id="code"><code>') %]
+            [% newpost = newpost.replace('=/code=','</code></div>') %]
+            [% newpost = newpost.replace('=b=','<b>')  %]
+            [% newpost = newpost.replace('=/b=','</b>')  %]
+            [% newpost = newpost.replace('=u=','<u>')  %]
+            [% newpost = newpost.replace('=/u=','</u>')  %]
+            [% newpost = newpost.replace('=i=','<i>')  %]
+            [% newpost = newpost.replace('=/i=','</i>')  %]
+            [% newpost = newpost.replace('\n','<br />') %]
+
+            
+            <tr><td valign="top">[% newpost %]
+
+            
+
+            
+            
+            
+            
+            
+            
+        </td></tr>
+        
+        </table>
+        
+        
+        </td>
+    </tr>
+    </table>    <div style="height: 4px;"></div>
+
+    
+    
+[% x = 1 %]
 [% FOREACH post IN vars.posts %]
     
     <table class="[% loop.parity %]" width="100%">
@@ -30,14 +97,54 @@
             
         </td><td valign="top">
         
-        <table>
-            <tr><td valign="top" style="border-bottom: 1px solid #FFFFFF";>[% post.date %]<span style="padding-left:300px;">
-           <a href="/c/forums/flag/[% post.post_id %]" title="flag this post for review"><img border="0" src="/images/red-flag.gif" alt="flag"></a></span></td></tr>
+        <table width="100%">
+            <tr><td align="left" valign="top" style="border-bottom: 1px solid #FFFFFF";><a href="/forums/thread/[% vars.thread.thread_id %]/[% vars.thread.thread_title %]#[% x %]">#[% x %]</a>&nbsp;&nbsp;[% post.date %]
+            <span style="float:right; padding-right: 5px;">
+            [% IF session.moderator.defined %]
+                <a href="/c/forums/post-edit/[% post.post_id %]">edit this post</a></span>
+            [% ELSE %]
+                <a href="/c/forums/flag/[% post.post_id %]" title="flag this post for review"><img border="0" src="/images/red-flag.gif" alt="flag"></a>
+            [% END %]
+            </span>
+
+       
+
+            
+            </td></tr>
             [% newpost = post.post %]
-            [% newpost = newpost.replace('\n','<br />') %]
+            
             [% newpost = newpost.replace('<','&lt;') %]
-            [% newpost = newpost.replace('>','&gt;') %]            
-            <tr><td valign="top">[% newpost %]</td></tr>
+            [% newpost = newpost.replace('>','&gt;') %]
+
+            
+            [% object =  vars.question %]
+
+            [% newpost = newpost.replace('=code=','<div id="code"><code>') %]
+            [% newpost = newpost.replace('=code=\n','<div id="code"><code>') %]
+            [% newpost = newpost.replace('=/code=','</code></div>') %]
+            [% newpost = newpost.replace('=b=','<b>')  %]
+            [% newpost = newpost.replace('=/b=','</b>')  %]
+            [% newpost = newpost.replace('=u=','<u>')  %]
+            [% newpost = newpost.replace('=/u=','</u>')  %]
+            [% newpost = newpost.replace('=i=','<i>')  %]
+            [% newpost = newpost.replace('=/i=','</i>')  %]
+            [% newpost = newpost.replace('\n','<br />') %]
+
+            
+            <tr><td valign="top">[% newpost %]
+
+            
+            
+                [% IF post.post_edit == 1 %]
+                    <br /><br />
+                    <i>edited by [% post.post_edit_user.username %] on [% post.post_edit_date %]<br />
+                    Reason: [% post.post_edit_reason %]</i>
+                [% END %]
+            
+            
+            
+            
+        </td></tr>
         
         </table>
         
@@ -46,6 +153,7 @@
     </tr>
     </table>    <div style="height: 4px;"></div>
 
+    [% x = x+1 %]
 [% END %]
     [% IF vars.thread.locked == 1%]
         <br /><p><img src="/images/lock_icon.png" alt="locked" /> This thread is locked</p>
@@ -53,10 +161,16 @@
         <a id="showhidetrigger" href="#showhidetarget">Reply</a>
     <div id="showhidetarget"><br />
         
+        <table><tr><td>
         <form method="post" action="/c/forums/reply/[% session.current_thread %]">
-        <textarea name="post" cols="40" rows="6"></textarea><br />
+        <textarea name="post" cols="50" rows="10"></textarea><br />
                 <input type="submit" value="Reply" />
         </form>
+        </td><td valign="top">Available markup tags:<br />
+        =code=  =/code=  (code)<br />
+        =b= =/b=  (bold)<br />
+        =i= =/i=   (italics)<br />
+        =u= =/u=   (underline)</td></tr></table>
         
     
     </div>
